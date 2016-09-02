@@ -46,6 +46,8 @@
     double L = sin((90 -_a ) * _r2);
     double b = atan((L - _d)/H);
     
+    double r1Offset = _r1/3.6;
+//    CGPoint Ac = CGPointMake(<#CGFloat x#>, <#CGFloat y#>)
 }
 
 @end
