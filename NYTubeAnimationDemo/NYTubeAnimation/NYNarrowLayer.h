@@ -7,8 +7,9 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
+#import <UIKit/UIKit.h>
 
-@interface NYNarrowLayer : CALayer
+@interface NYNarrowLayer : CAShapeLayer
 
 @property (nonatomic, assign) double r1;
 @property (nonatomic, assign) double r2;

@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "NYTubeAnimationView.h"
 
 @interface ViewController ()
 
@@ -16,8 +17,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    NYTubeAnimationView *animationView = [[NYTubeAnimationView alloc]initWithFrame:self.view.frame];
+    [self.view addSubview:animationView];
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

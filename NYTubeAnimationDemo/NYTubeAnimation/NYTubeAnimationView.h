@@ -11,3 +11,10 @@
 @interface NYTubeAnimationView : UIView
 
 @end
+
+@interface TestView : UIView
+
+@property (nonatomic, assign) double r1;
+@property (nonatomic, assign) double r2;
+
+@end
