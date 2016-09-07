@@ -34,9 +34,6 @@
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
     [self addSubview:self.narrowView];
-    
-    
-//    [self addSubview:self.testView];
 }
 
 #pragma mark Get
