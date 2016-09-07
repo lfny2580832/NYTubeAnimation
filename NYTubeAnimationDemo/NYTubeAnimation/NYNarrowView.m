@@ -27,6 +27,7 @@
 @property (nonatomic, strong) CAShapeLayer *bottomRightShape;       //右下角形状
 @property (nonatomic, strong) CAShapeLayer *volcanoShape;           //火山形状
 @property (nonatomic, strong) CAShapeLayer *semicircleShape;        //半圆形状
+@property (nonatomic, strong) CAShapeLayer *leftCircleShape;        //快完全进入时，使用该形状代替整体形状
 @property (nonatomic, strong) CAShapeLayer *recShape;               //管道形状矩形区域
 
 @end
@@ -46,9 +47,9 @@
         
         [self initShapes];
         
-        _d = 199;
-        [self drawWithParams];
-//        [self setDisplayLink];
+//        _d = 199;
+//        [self drawWithParams];
+        [self setDisplayLink];
     }
     return self;
 }
@@ -65,6 +66,7 @@
     self.mainRecShape = [[CAShapeLayer alloc]init];
     self.topRightShape = [[CAShapeLayer alloc]init];
     self.bottomRightShape = [[CAShapeLayer alloc]init];
+    self.leftCircleShape = [[CAShapeLayer alloc]init];
     
     self.leftSemiShape.frame = frame;
     self.volcanoShape.frame = frame;
@@ -73,6 +75,7 @@
     self.mainRecShape.frame = frame;
     self.topRightShape.frame = frame;
     self.bottomRightShape.frame = frame;
+    self.leftCircleShape.frame = frame;
     
     [self.layer addSublayer:self.leftSemiShape];
     [self.layer addSublayer:self.mainRecShape];
@@ -81,6 +84,7 @@
     [self.layer addSublayer:self.volcanoShape];
     [self.layer addSublayer:self.semicircleShape];
     [self.layer addSublayer:self.recShape];
+    [self.layer addSublayer:self.leftCircleShape];
 }
 
 //初始化CADisplaylink并添加到runloop执行动作
@@ -175,6 +179,19 @@
     }
     self.bottomRightShape.path = bottomRightPath.CGPath;
     
+    //----------------------------------------leftShape(完全进入时左方形状形状)-----------------------------------------
+    
+    UIBezierPath *leftPath = [UIBezierPath bezierPath];
+    if (_d < _mainRectWidth) {
+        [leftPath addArcWithCenter:pointO radius:_r1 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
+    }else if(_d >= _mainRectWidth && (_d - _mainRectWidth) <= _mid_d){
+        double temC = atan((pointP.x - pointO.x - (_d - _mainRectWidth))/(pointO.y - pointP.y))*180/M_PI;
+        CGPoint temPointQ = CGPointMake(pointO.x + (_d - _mainRectWidth), pointO.y);
+        double temR3 = (pointO.y - pointP.y)/cosx(temC) - _r2;
+        [leftPath addArcWithCenter:temPointQ radius:temR3 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
+    }
+    self.leftCircleShape.path = leftPath.CGPath;
+    
     //-------------------------------------------volcanoPath(火山形状)-----------------------------------------
 
     UIBezierPath *vocalnoPath = [UIBezierPath bezierPath];
@@ -222,6 +239,7 @@
     [self.volcanoShape setNeedsDisplay];
     [self.semicircleShape setNeedsDisplay];
     [self.recShape setNeedsDisplay];
+    [self.leftCircleShape setNeedsDisplay];
 }
 
 //一个提取出来的画点的方法：在 point 位置画一个点，方便观察运动情况
