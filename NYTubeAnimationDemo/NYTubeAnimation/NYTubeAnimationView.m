@@ -7,7 +7,7 @@
 //
 
 #import "NYTubeAnimationView.h"
-#import "NYNarrowLayer.h"
+#import "NYNarrowView.h"
 
 #define sinx(a)  sin(a/180*M_PI)
 #define cosx(a)  cos(a/180*M_PI)
@@ -15,7 +15,7 @@
 
 @interface NYTubeAnimationView ()
 
-@property (nonatomic, strong) NYNarrowLayer *narrowLayer;
+@property (nonatomic, strong) NYNarrowView *narrowView;
 @property (nonatomic, strong) TestView *testView;
 
 @end
@@ -33,23 +33,19 @@
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
-
-    UIView *layerContainer = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-    [layerContainer.layer addSublayer:self.narrowLayer];
-    [self addSubview:layerContainer];
-    [self.narrowLayer setNeedsDisplay];
+    [self addSubview:self.narrowView];
+    
     
 //    [self addSubview:self.testView];
 }
 
 #pragma mark Get
- - (NYNarrowLayer *)narrowLayer
+ - (NYNarrowView *)narrowView
 {
-    if (!_narrowLayer) {
-        _narrowLayer = [[NYNarrowLayer alloc]init];
-        _narrowLayer.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+    if (!_narrowView) {
+        _narrowView = [[NYNarrowView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
     }
-    return _narrowLayer;
+    return _narrowView;
 }
 
 - (TestView *)testView

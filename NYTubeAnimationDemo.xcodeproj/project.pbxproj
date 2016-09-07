@@ -14,7 +14,7 @@
 		4A4DB4651D78381700C29E6E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A4DB4641D78381700C29E6E /* Assets.xcassets */; };
 		4A4DB4681D78381700C29E6E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4A4DB4661D78381700C29E6E /* LaunchScreen.storyboard */; };
 		4A4DB4721D78406B00C29E6E /* NYTubeAnimationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DB4711D78406B00C29E6E /* NYTubeAnimationView.m */; };
-		4AE339FF1D7981AE0048AECD /* NYNarrowLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AE339FE1D7981AE0048AECD /* NYNarrowLayer.m */; };
+		4AE339FF1D7981AE0048AECD /* NYNarrowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AE339FE1D7981AE0048AECD /* NYNarrowView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,8 +30,8 @@
 		4A4DB4691D78381700C29E6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4A4DB4701D78406B00C29E6E /* NYTubeAnimationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYTubeAnimationView.h; sourceTree = "<group>"; };
 		4A4DB4711D78406B00C29E6E /* NYTubeAnimationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NYTubeAnimationView.m; sourceTree = "<group>"; };
-		4AE339FD1D7981AE0048AECD /* NYNarrowLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYNarrowLayer.h; sourceTree = "<group>"; };
-		4AE339FE1D7981AE0048AECD /* NYNarrowLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NYNarrowLayer.m; sourceTree = "<group>"; };
+		4AE339FD1D7981AE0048AECD /* NYNarrowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYNarrowView.h; sourceTree = "<group>"; };
+		4AE339FE1D7981AE0048AECD /* NYNarrowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NYNarrowView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,8 +91,8 @@
 			children = (
 				4A4DB4701D78406B00C29E6E /* NYTubeAnimationView.h */,
 				4A4DB4711D78406B00C29E6E /* NYTubeAnimationView.m */,
-				4AE339FD1D7981AE0048AECD /* NYNarrowLayer.h */,
-				4AE339FE1D7981AE0048AECD /* NYNarrowLayer.m */,
+				4AE339FD1D7981AE0048AECD /* NYNarrowView.h */,
+				4AE339FE1D7981AE0048AECD /* NYNarrowView.m */,
 			);
 			path = NYTubeAnimation;
 			sourceTree = "<group>";
@@ -171,7 +171,7 @@
 				4A4DB45D1D78381700C29E6E /* AppDelegate.m in Sources */,
 				4A4DB4721D78406B00C29E6E /* NYTubeAnimationView.m in Sources */,
 				4A4DB45A1D78381700C29E6E /* main.m in Sources */,
-				4AE339FF1D7981AE0048AECD /* NYNarrowLayer.m in Sources */,
+				4AE339FF1D7981AE0048AECD /* NYNarrowView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

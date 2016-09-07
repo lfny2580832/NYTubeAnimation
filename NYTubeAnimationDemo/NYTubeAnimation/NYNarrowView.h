@@ -9,7 +9,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
-@interface NYNarrowLayer : CAShapeLayer
+@interface NYNarrowView : UIView
 
 @property (nonatomic, assign) double r1;
 @property (nonatomic, assign) double r2;
