@@ -19,6 +19,7 @@
 @property (nonatomic, assign) double mid_d;     /// 挤压完成，开始拉伸的距离
 @property (nonatomic, assign) double tube_d;     /// 挤压开始，到达出口的距离，即管道长度
 @property (nonatomic, assign) double mainRectWidth; //主体矩形的宽度
+@property (nonatomic, assign) double shape_tube_d;  //形状在管道中的长度，管道可能长一些
 
 @property (nonatomic, strong) CADisplayLink *displayLink;
 @property (nonatomic, strong) CAShapeLayer *leftSemiShape;          //左边圆弧
@@ -40,11 +41,11 @@
     if (self) {
         _r1 = 100;
         _r2 = 50;
-        _a = 23.0;      //角度制
+        _a = 30.0;      //角度制
         _d = 0;
         _mainRectWidth = 200;
         _tube_d = _r1 * 4;
-        
+        _shape_tube_d = _r1 * 3;
         [self initShapes];
         
 //        _d = 199;
@@ -107,10 +108,11 @@
 
 - (void)drawWithParams
 {
-    CGPoint pointO = CGPointMake(400, 500);
+    CGPoint pointO = CGPointMake(200, 500);
     CGPoint pointP = CGPointMake(1.5*_r1*cosx(_a) + pointO.x, -1.5*_r1*sinx(_a) + pointO.y);
     //左圆弧圆心
     CGPoint pointR = CGPointMake(pointO.x - _mainRectWidth + _d, pointO.y);
+    
     _mid_d = pointP.x - pointO.x;
     
     CGPoint pointA = CGPointMake(_r1*cosx(_a) + pointO.x, -_r1*sinx(_a) + pointO.y);
@@ -179,28 +181,28 @@
     }
     self.bottomRightShape.path = bottomRightPath.CGPath;
     
-    //----------------------------------------leftShape(完全进入时左方形状形状)-----------------------------------------
-    
-    UIBezierPath *leftPath = [UIBezierPath bezierPath];
-    if (_d < _mainRectWidth) {
-        [leftPath addArcWithCenter:pointO radius:_r1 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
-    }else if(_d >= _mainRectWidth && (_d - _mainRectWidth) <= _mid_d){
-        double temC = atan((pointP.x - pointO.x - (_d - _mainRectWidth))/(pointO.y - pointP.y))*180/M_PI;
-        CGPoint temPointQ = CGPointMake(pointO.x + (_d - _mainRectWidth), pointO.y);
-        double temR3 = (pointO.y - pointP.y)/cosx(temC) - _r2;
-        [leftPath addArcWithCenter:temPointQ radius:temR3 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
-    }
-    self.leftCircleShape.path = leftPath.CGPath;
-    
-    //-------------------------------------------volcanoPath(火山形状)-----------------------------------------
+     //-------------------------------------------volcanoPath(火山形状)-----------------------------------------
 
     UIBezierPath *vocalnoPath = [UIBezierPath bezierPath];
-    if (_d >= _mid_d) {
-        c = 0;
+    if(_d < _mainRectWidth){
+        double temC = c;
+        if (c <= 0 ) {
+            temC = 0;
+        }
+        [vocalnoPath addArcWithCenter:pointP radius:_r2 startAngle:(M_PI * ((90 + temC)/180)) endAngle:(M_PI * ((180 - _a)/180)) clockwise:YES];
+        [vocalnoPath addArcWithCenter:CGPointMake(pointP.x, pointO.y + (pointO.y - pointP.y)) radius:_r2 startAngle:((180 + _a)/180 *M_PI) endAngle:(((270 - temC)/180) *M_PI) clockwise:YES];
     }
-    [vocalnoPath addArcWithCenter:pointP radius:_r2 startAngle:(M_PI * ((90 + c)/180)) endAngle:(M_PI * ((180 - _a)/180)) clockwise:YES];
-    [vocalnoPath addArcWithCenter:CGPointMake(pointP.x, pointO.y + (pointO.y - pointP.y)) radius:_r2 startAngle:((180 + _a)/180 *M_PI) endAngle:(((270 - c)/180) *M_PI) clockwise:YES];
-    
+    else if(_d >= _mainRectWidth && (_d - _mainRectWidth) <= _mid_d){
+        double temC = atan((pointP.x - pointO.x - (_d - _mainRectWidth))/(pointO.y - pointP.y))*180/M_PI;
+        [vocalnoPath addArcWithCenter:pointP radius:_r2 startAngle:(0.5 * M_PI) endAngle:(((90 + temC)/180) * M_PI) clockwise:YES];
+        [vocalnoPath addArcWithCenter:CGPointMake(pointP.x, pointO.y + (pointO.y - pointP.y)) radius:_r2 startAngle:((270 - temC)/180 *M_PI) endAngle:(1.5 *M_PI) clockwise:YES];
+        //        NSLog(@"------%f---%f--",temC, 180 - _a - temC);
+    }
+    else if (_d >= _mid_d) {
+//        c = 0;
+//        [vocalnoPath addArcWithCenter:pointP radius:_r2 startAngle:(M_PI * ((90 + c)/180)) endAngle:(M_PI * ((180 - _a)/180)) clockwise:YES];
+//        [vocalnoPath addArcWithCenter:CGPointMake(pointP.x, pointO.y + (pointO.y - pointP.y)) radius:_r2 startAngle:((180 + _a)/180 *M_PI) endAngle:(((270 - c)/180) *M_PI) clockwise:YES];
+    }
     self.volcanoShape.path = vocalnoPath.CGPath;
     
     //-------------------------------------------semiCircle(半圆形状)-----------------------------------------
@@ -214,23 +216,49 @@
 
     self.semicircleShape.path  = semiPath.CGPath;
     
+    //----------------------------------------leftShape(完全进入时左方形状形状)-----------------------------------------
+    
+    UIBezierPath *leftPath = [UIBezierPath bezierPath];
+    if (_d < _mainRectWidth) {
+        [leftPath addArcWithCenter:pointO radius:_r1 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
+    }else if(_d >= _mainRectWidth && (_d - _mainRectWidth) <= _mid_d){
+        double temC = atan((pointP.x - pointO.x - (_d - _mainRectWidth))/(pointO.y - pointP.y))*180/M_PI;
+        CGPoint temPointQ = CGPointMake(pointO.x + (_d - _mainRectWidth), pointO.y);
+        double temR3 = (pointO.y - pointP.y)/cosx(temC) - _r2;
+        [leftPath addArcWithCenter:temPointQ radius:temR3 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
+    }else if (_d >= _mid_d + _mainRectWidth){
+        CGPoint temPointQ = CGPointMake(pointO.x + (_d - _mainRectWidth), pointO.y);
+        [leftPath addArcWithCenter:temPointQ radius:h/2 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
+        
+    }
+    self.leftCircleShape.path = leftPath.CGPath;
+    
+
     //---------------------------------------------recPath(管道形状)-----------------------------------------
     
-    if(_d <= _tube_d + _mid_d && _d>= _mid_d)
+    UIBezierPath *recPath = [UIBezierPath bezierPath];
+    
+    if(_d <= _shape_tube_d + _mid_d && _d>= _mid_d)
     {
-        UIBezierPath *recPath = [UIBezierPath bezierPath];
-        [recPath moveToPoint:CGPointMake(pointC.x , pointC.y)];
-        [recPath addLineToPoint:CGPointMake(pointD.x , pointD.y)];
-        [recPath addLineToPoint:CGPointMake(pointD.x + _d - _mid_d, pointD.y)];
-        [recPath addLineToPoint:CGPointMake(pointD.x + _d - _mid_d, pointC.y)];
+        double tem_d = _d - _mid_d;
+        if (_d - _mid_d - _shape_tube_d <= 0 ) {
+            [recPath moveToPoint:CGPointMake(pointC.x , pointC.y)];
+            [recPath addLineToPoint:CGPointMake(pointD.x , pointD.y)];
+        }else{
+            [recPath moveToPoint:CGPointMake(pointC.x + (_d - _mid_d - _shape_tube_d), pointC.y)];
+            [recPath addLineToPoint:CGPointMake(pointD.x + (_d - _mid_d - _shape_tube_d), pointD.y)];
+        }
+//        [recPath moveToPoint:CGPointMake(pointC.x , pointC.y)];
+//        [recPath addLineToPoint:CGPointMake(pointD.x , pointD.y)];
+        [recPath addLineToPoint:CGPointMake(pointD.x + 2*(_d - _mid_d), pointD.y)];
+        [recPath addLineToPoint:CGPointMake(pointD.x + 2*(_d - _mid_d), pointC.y)];
         [recPath addLineToPoint:pointC];
         [recPath closePath];
-        self.recShape.path = recPath.CGPath;
-    }else{
-        UIBezierPath *recPath = [UIBezierPath bezierPath];
-        self.recShape.path = recPath.CGPath;
+    }else {
+        recPath = [UIBezierPath bezierPath];
     }
-    
+    self.recShape.path = recPath.CGPath;
+
     //------------------------------------------------设置绘制标示----------------------------------------------
     
     [self.leftSemiShape setNeedsDisplay];
