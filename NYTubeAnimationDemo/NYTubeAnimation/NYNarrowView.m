@@ -27,7 +27,7 @@
 @property (nonatomic, strong) CAShapeLayer *topRightShape;          //右上角形状
 @property (nonatomic, strong) CAShapeLayer *bottomRightShape;       //右下角形状
 @property (nonatomic, strong) CAShapeLayer *volcanoShape;           //火山形状
-@property (nonatomic, strong) CAShapeLayer *semicircleShape;        //半圆形状
+@property (nonatomic, strong) CAShapeLayer *rightSemicircleShape;        //半圆形状
 @property (nonatomic, strong) CAShapeLayer *leftCircleShape;        //快完全进入时，使用该形状代替整体形状
 @property (nonatomic, strong) CAShapeLayer *recShape;               //管道形状矩形区域
 
@@ -62,7 +62,7 @@
 
     self.leftSemiShape = [[CAShapeLayer alloc]init];
     self.volcanoShape = [[CAShapeLayer alloc]init];
-    self.semicircleShape = [[CAShapeLayer alloc]init];
+    self.rightSemicircleShape = [[CAShapeLayer alloc]init];
     self.recShape = [[CAShapeLayer alloc]init];
     self.mainRecShape = [[CAShapeLayer alloc]init];
     self.topRightShape = [[CAShapeLayer alloc]init];
@@ -71,7 +71,7 @@
     
     self.leftSemiShape.frame = frame;
     self.volcanoShape.frame = frame;
-    self.semicircleShape.frame = frame;
+    self.rightSemicircleShape.frame = frame;
     self.recShape.frame = frame;
     self.mainRecShape.frame = frame;
     self.topRightShape.frame = frame;
@@ -83,7 +83,7 @@
     [self.layer addSublayer:self.topRightShape];
     [self.layer addSublayer:self.bottomRightShape];
     [self.layer addSublayer:self.volcanoShape];
-    [self.layer addSublayer:self.semicircleShape];
+    [self.layer addSublayer:self.rightSemicircleShape];
     [self.layer addSublayer:self.recShape];
     [self.layer addSublayer:self.leftCircleShape];
 }
@@ -205,7 +205,7 @@
     }
     self.volcanoShape.path = vocalnoPath.CGPath;
     
-    //-------------------------------------------semiCircle(右边圆形状)-----------------------------------------
+    //-------------------------------------------rightSemiCircle(右边圆形状)-----------------------------------------
 
     UIBezierPath *semiPath = [UIBezierPath bezierPath];
     //减去0.2是为了严密贴合，因为double计算最终结果稍有偏差
@@ -217,7 +217,7 @@
     }
     [semiPath addArcWithCenter:CGPointMake(pointQ.x, pointQ.y) radius:r3 startAngle:(((270 + c)/180) * M_PI) endAngle:(((90 - c)/180)*M_PI) clockwise:YES];
 
-    self.semicircleShape.path  = semiPath.CGPath;
+    self.rightSemicircleShape.path  = semiPath.CGPath;
     
     //----------------------------------------leftShape(完全进入时左方形状形状)-----------------------------------------
     
@@ -261,7 +261,7 @@
     [self.mainRecShape setNeedsDisplay];
     [self.topRightShape setNeedsDisplay];
     [self.volcanoShape setNeedsDisplay];
-    [self.semicircleShape setNeedsDisplay];
+    [self.rightSemicircleShape setNeedsDisplay];
     [self.recShape setNeedsDisplay];
     [self.leftCircleShape setNeedsDisplay];
 }
