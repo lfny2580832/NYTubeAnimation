@@ -39,11 +39,11 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        _r1 = 100;
-        _r2 = 50;
-        _a = 30.0;      //角度制
+        _r1 = 50;
+        _r2 = 25;
+        _a = 28.0;      //角度制
         _d = 0;
-        _mainRectWidth = 200;
+        _mainRectWidth = _r1 * 2;
         _tube_d = _r1 * 4;
         _shape_tube_d = _r1 * 3;
         [self initShapes];
@@ -122,9 +122,9 @@
     CGPoint pointD = CGPointMake(pointC.x, pointC.y + h);
     
     //动态圆 的圆弧角度/2
-    double c = atan((pointP.x - pointO.x - _d)/(pointO.y - pointP.y))*180/M_PI;
+    double c = atan((pointP.x - pointO.x - 2 *_d)/(pointO.y - pointP.y))*180/M_PI;
     //动态圆的圆心
-    CGPoint pointQ = CGPointMake(pointO.x + _d, pointO.y);
+    CGPoint pointQ = CGPointMake(pointO.x + 2 *_d, pointO.y);
     //动态圆的半径
     double r3 = (pointO.y - pointP.y)/cosx(c) - _r2;
     
@@ -205,12 +205,15 @@
     }
     self.volcanoShape.path = vocalnoPath.CGPath;
     
-    //-------------------------------------------semiCircle(半圆形状)-----------------------------------------
+    //-------------------------------------------semiCircle(右边圆形状)-----------------------------------------
 
     UIBezierPath *semiPath = [UIBezierPath bezierPath];
     //减去0.2是为了严密贴合，因为double计算最终结果稍有偏差
-    if (_d >= _mid_d) {
+    if ( 2 *_d >= _mid_d) {
         r3 = h/2;
+    }
+    if (c <= 0) {
+        
     }
     [semiPath addArcWithCenter:CGPointMake(pointQ.x, pointQ.y) radius:r3 startAngle:(((270 + c)/180) * M_PI) endAngle:(((90 - c)/180)*M_PI) clockwise:YES];
 
@@ -238,20 +241,13 @@
     
     UIBezierPath *recPath = [UIBezierPath bezierPath];
     
-    if(_d <= _shape_tube_d + _mid_d && _d>= _mid_d)
+    if(_d <= _tube_d + _mid_d)
     {
-        double tem_d = _d - _mid_d;
-        if (_d - _mid_d - _shape_tube_d <= 0 ) {
-            [recPath moveToPoint:CGPointMake(pointC.x , pointC.y)];
-            [recPath addLineToPoint:CGPointMake(pointD.x , pointD.y)];
-        }else{
-            [recPath moveToPoint:CGPointMake(pointC.x + (_d - _mid_d - _shape_tube_d), pointC.y)];
-            [recPath addLineToPoint:CGPointMake(pointD.x + (_d - _mid_d - _shape_tube_d), pointD.y)];
-        }
-//        [recPath moveToPoint:CGPointMake(pointC.x , pointC.y)];
-//        [recPath addLineToPoint:CGPointMake(pointD.x , pointD.y)];
-        [recPath addLineToPoint:CGPointMake(pointD.x + 2*(_d - _mid_d), pointD.y)];
-        [recPath addLineToPoint:CGPointMake(pointD.x + 2*(_d - _mid_d), pointC.y)];
+
+        [recPath moveToPoint:CGPointMake(pointR.x , pointC.y)];
+        [recPath addLineToPoint:CGPointMake(pointR.x , pointD.y)];
+        [recPath addLineToPoint:CGPointMake(pointQ.x, pointD.y)];
+        [recPath addLineToPoint:CGPointMake(pointQ.x, pointC.y)];
         [recPath addLineToPoint:pointC];
         [recPath closePath];
     }else {
