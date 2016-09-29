@@ -11,15 +11,72 @@
 
 @interface ViewController ()
 
+@property (nonatomic, strong) NYTubeAnimationView *animationView;
+@property (nonatomic, strong) UILabel *label;
+@property (nonatomic, assign) double chosen_d;
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NYTubeAnimationView *animationView = [[NYTubeAnimationView alloc]initWithFrame:self.view.frame];
-    [self.view addSubview:animationView];
+    
+    [self.view addSubview:self.animationView];
+    
+    UISlider *slider = [[UISlider alloc]initWithFrame:CGRectMake(50, 100, 300, 20)];
+    [slider addTarget:self action:@selector(changeValue:) forControlEvents:UIControlEventValueChanged];
+    [self.view addSubview:slider];
+    
+    [self.view addSubview:self.label];
+    
+    UIButton *addBtn = [[UIButton alloc]initWithFrame:CGRectMake(160, 200, 50, 50)];
+    [addBtn setBackgroundColor:[UIColor blackColor]];
+    [addBtn setTitle:@"加" forState:UIControlStateNormal];
+    [addBtn addTarget:self action:@selector(addChosend) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:addBtn];
+    
+    UIButton *subBtn = [[UIButton alloc]initWithFrame:CGRectMake(220, 200, 50, 50)];
+    [subBtn setBackgroundColor:[UIColor blackColor]];
+    [subBtn setTitle:@"减" forState:UIControlStateNormal];
+    [subBtn addTarget:self action:@selector(subChosend) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:subBtn];
 }
 
+- (void)addChosend
+{
+    self.chosen_d += 4;
+    self.label.text = [NSString stringWithFormat:@"%f",self.chosen_d];
+    self.animationView.chosen_d = self.chosen_d;
+}
+
+- (void)subChosend
+{
+    self.chosen_d -= 4;
+    self.label.text = [NSString stringWithFormat:@"%f",self.chosen_d];
+    self.animationView.chosen_d = self.chosen_d;
+}
+
+- (void)changeValue:(UISlider *)slider
+{
+    self.chosen_d = slider.value * 100;
+    self.label.text = [NSString stringWithFormat:@"%f",self.chosen_d];
+    self.animationView.chosen_d = self.chosen_d;
+}
+
+#pragma mark Get
+- (NYTubeAnimationView *)animationView
+{
+    if (!_animationView) {
+        _animationView = [[NYTubeAnimationView alloc]initWithFrame:self.view.frame];
+    }
+    return _animationView;
+}
+- (UILabel *)label
+{
+    if (!_label) {
+        _label = [[UILabel alloc]initWithFrame:CGRectMake(50, 200, 100, 50)];
+    }
+    return _label;
+}
 
 @end

@@ -14,5 +14,6 @@
 @property (nonatomic, assign) double r1;
 @property (nonatomic, assign) double r2;
 
+@property (nonatomic, assign) double chosen_d;
 
 @end

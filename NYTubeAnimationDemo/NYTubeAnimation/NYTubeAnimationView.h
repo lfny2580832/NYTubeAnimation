@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface NYTubeAnimationView : UIView
+@property (nonatomic, assign) double chosen_d;
 
 @end
 

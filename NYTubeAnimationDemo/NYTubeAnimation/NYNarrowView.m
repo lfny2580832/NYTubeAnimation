@@ -26,6 +26,7 @@
 //@property (nonatomic, assign) double shape_tube_d;  //形状在管道中的长度，管道可能长一些，如用此参数需设置距离比例，暂未实施
 
 @property (nonatomic, strong) CADisplayLink *displayLink;
+@property (nonatomic, strong) CADisplayLink *chosenDisplayLink;
 @property (nonatomic, strong) CAShapeLayer *leftSemiShape;          //左边圆弧
 @property (nonatomic, strong) CAShapeLayer *mainRecShape;           //主体矩形区域
 @property (nonatomic, strong) CAShapeLayer *volcanoShape;           //火山形状
@@ -39,6 +40,7 @@
 {
     CGPoint _pointO;
     CGPoint _pointQ;
+    CGPoint _pointQ2;
     CGPoint _pointO2;
     CGPoint _pointP;
     CGPoint _pointP2;
@@ -47,7 +49,10 @@
     CGPoint _pointB;
     CGPoint _pointC;
     CGPoint _pointD;
-    double _tube_h;
+    double  _tube_h;
+    double  _dynamic_pointQ_d;
+    double  _dynamic_pointQ2_d;
+    
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -64,12 +69,10 @@
         
         _mid_d_rate = 1.5f;
         _tube_d_rate = 3.0f;
-        
 
         [self initShapes];
-        
-//        _d = 199;
-//        [self drawWithParams];
+        [self initParams];
+
         [self setDisplayLink];
     }
     return self;
@@ -81,6 +84,8 @@
     _pointO = CGPointMake(200, 500);
     //动态圆圆心
     _pointQ = _pointO;
+    //形状右圆圆心
+    _pointQ2 = _pointQ;
     //左方右上角圆心
     _pointP = CGPointMake(1.5*_r1*cosx(_a) + _pointO.x, -1.5*_r1*sinx(_a) + _pointO.y);
     
@@ -92,6 +97,9 @@
     _pointC = CGPointMake(_pointP.x, _pointP.y + _r2);
     _tube_h = 2* ( _pointO.y - _pointC.y );
     _pointD = CGPointMake(_pointC.x, _pointC.y + _tube_h);
+    
+    _dynamic_pointQ_d = 0;
+    _dynamic_pointQ2_d = 0;
 }
 
 //初始化各shape
@@ -113,12 +121,12 @@
     self.mainRecShape.frame = frame;
     self.leftCircleShape.frame = frame;
     
-//    [self.layer addSublayer:self.leftSemiShape];
-//    [self.layer addSublayer:self.mainRecShape];
-//    [self.layer addSublayer:self.volcanoShape];
+    [self.layer addSublayer:self.leftSemiShape];
+    [self.layer addSublayer:self.mainRecShape];
+    [self.layer addSublayer:self.volcanoShape];
     [self.layer addSublayer:self.rightSemicircleShape];
-//    [self.layer addSublayer:self.recShape];
-//    [self.layer addSublayer:self.leftCircleShape];
+    [self.layer addSublayer:self.recShape];
+    [self.layer addSublayer:self.leftCircleShape];
 }
 
 //初始化CADisplaylink并添加到runloop执行动作
@@ -134,12 +142,40 @@
     _d = _d + _increment;
     [self drawWithParams];
 
-    if (_d >= _tube_d + _mid_d + _mid_d) {
+    if (_dynamic_pointQ_d >= _tube_d + _mid_d + _mid_d ) {
         _d = 0;
         [self initParams];
     }
 }
 
+- (void)changeParamManually
+{
+    if (_d >= _chosen_d) {
+        return;
+    }
+    
+    _d = _d + _increment;
+
+    [self drawWithParams];
+}
+
+- (void)setChosen_d:(double)chosen_d
+{
+    [self.displayLink invalidate];
+    self.displayLink = nil;
+    _chosen_d = chosen_d;
+    _d = 0;
+    [self initParams];
+
+    if (self.chosenDisplayLink) {
+        [self.chosenDisplayLink invalidate];
+        self.chosenDisplayLink = nil;
+    }
+    self.chosenDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(changeParamManually)];
+    [self.chosenDisplayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+}
+
+#pragma mark 绘制方法
 - (void)drawWithParams
 {
     //右块左圆圆心
@@ -149,33 +185,66 @@
     //主体左圆圆心
     _pointR = CGPointMake(_pointO.x - _mainRectWidth + _d, _pointO.y);
 
-    //动态圆从头走的距离
-    double dynamic_pointQ_d = _pointQ.x - _pointO.x;
-    
-#warning 此处要求管道长度是main_d+mid_d的两倍，即 完全进入管道后才从右边出来
-    if (dynamic_pointQ_d <= _mid_d)
-    {                //变小、变大过程中，1.5倍速
-         _pointQ = CGPointMake(_pointO.x + _mid_d_rate * _d , _pointO.y);
+    //形状右方的圆行进距离，用来在最后进管道当做尾巴
+    if (_dynamic_pointQ2_d <= _mid_d)
+    {
+        if (_d <= _mainRectWidth) {
+            _dynamic_pointQ2_d = 0;
+        }else{
+            _dynamic_pointQ2_d += _mid_d_rate * _increment;
+        }
     }
-    else if (dynamic_pointQ_d <= _mid_d + _tube_d && _d <= _mainRectWidth + _mid_d)
-    {                 //动态圆变最小后，速率变为tube_d_rate，3.0倍速，直到左边的圆也变最小
-        _pointQ = CGPointMake(_pointO.x + _mid_d + _tube_d_rate *(_d - _mid_d), _pointO.y);
+    else if (_dynamic_pointQ2_d <= _tube_d + _mid_d)
+    {
+        _dynamic_pointQ2_d += _tube_d_rate * _increment;
     }
-    else if (_d >= _mainRectWidth + _mid_d && dynamic_pointQ_d <= _mid_d + _tube_d)
-    {                 //动态圆 从左圆完全进入————管道右边头的过程
-        _pointQ = CGPointMake(_pointO.x + _mid_d + _tube_d, _pointO.y);
+    else if (_dynamic_pointQ2_d <  _mid_d + _tube_d + _mid_d)
+    {
+        _dynamic_pointQ2_d += _mid_d_rate * _increment;
     }
-    else if (dynamic_pointQ_d >= _mid_d + _tube_d && dynamic_pointQ_d <= _mid_d + _tube_d + _mid_d)
-    {                 // 右边mid_d 过程， 1.5倍速q
-        _pointQ = CGPointMake(_pointO.x + _mid_d + _tube_d + _mid_d_rate * (_d - _mid_d - _tube_d), _pointO.y);
-    }
-    else if(dynamic_pointQ_d >= _tube_d + _mid_d + _mid_d)
-    {                //出来后固定在左边
-        _pointQ = _pointO2;
+    else
+    {
+        _dynamic_pointQ2_d = _mid_d + _tube_d + _mid_d;
     }
     
-    //动态圆 的圆弧角度/2
-    double c = atan((_pointP.x - _pointO.x - dynamic_pointQ_d)/(_pointO.y - _pointP.y))*180/M_PI;
+    _pointQ2 = CGPointMake(_pointO.x + _dynamic_pointQ2_d, _pointO.y);
+    
+    //动态圆弧行进距离
+    if (_dynamic_pointQ_d <= _mid_d)
+    {
+        _dynamic_pointQ_d += _mid_d_rate * _increment;
+    }
+    else if (_dynamic_pointQ_d < _mid_d + _tube_d)
+    {
+        _dynamic_pointQ_d += _tube_d_rate * _increment;
+        if (_dynamic_pointQ_d > _tube_d + _mid_d)
+        {
+            _dynamic_pointQ_d = _tube_d + _mid_d;
+        }
+    }
+    else if (_dynamic_pointQ_d <= _mid_d + _tube_d + _mid_d)
+    {
+        _dynamic_pointQ_d += _mid_d_rate * _increment;
+    }
+    //动态圆弧的圆心
+    _pointQ = CGPointMake(_pointO.x + _dynamic_pointQ_d, _pointO.y);
+    
+    
+    //动态圆弧端-圆心与y轴的夹角
+    double c;
+    
+    if (_dynamic_pointQ_d <= _mid_d)
+    {
+        c = atan((_pointP.x - _pointO.x - _dynamic_pointQ_d)/(_pointO.y - _pointP.y))*180/M_PI;
+    }
+    else if (_dynamic_pointQ_d <= _mid_d + _tube_d)
+    {
+        c = 0;
+    }
+    else if (_dynamic_pointQ_d <= _mid_d + _tube_d + _mid_d)
+    {
+        c = atan((_pointQ.x - _pointP2.x)/(_pointO.y - _pointP.y))*180/M_PI;
+    }
     
     //动态圆的半径
     double r3 = (_pointO.y - _pointP.y)/cosx(c) - _r2;
@@ -208,7 +277,8 @@
      //-------------------------------------------volcanoPath(火山形状)-----------------------------------------
 
     UIBezierPath *vocalnoPath = [UIBezierPath bezierPath];
-    if(_d < _mainRectWidth){
+    if(_d <= _mainRectWidth)
+    {   //形状左圆行驶到开始压缩之前
         double temC = c;
         if (c <= 0 ) {
             temC = 0;
@@ -216,12 +286,16 @@
         [vocalnoPath addArcWithCenter:_pointP radius:_r2 startAngle:(M_PI * ((90 + temC)/180)) endAngle:(M_PI * ((180 - _a)/180)) clockwise:YES];
         [vocalnoPath addArcWithCenter:CGPointMake(_pointP.x, _pointO.y + (_pointO.y - _pointP.y)) radius:_r2 startAngle:((180 + _a)/180 *M_PI) endAngle:(((270 - temC)/180) *M_PI) clockwise:YES];
     }
-    else if(_d >= _mainRectWidth && (_d - _mainRectWidth) <= _mid_d){
-        double temC = atan((_pointP.x - _pointO.x - (_d - _mainRectWidth))/(_pointO.y - _pointP.y))*180/M_PI;
+    else if(_dynamic_pointQ2_d <= _mid_d)
+    {
+//        double temC = atan((_pointP.x - _pointO.x - (_mid_d - _dynamic_pointQ2_d))/(_pointO.y - _pointP.y))*180/M_PI;
+        double temC = atan((_pointP.x - _pointO.x - _dynamic_pointQ2_d)/(_pointO.y - _pointP.y))*180/M_PI;
+
         [vocalnoPath addArcWithCenter:_pointP radius:_r2 startAngle:(0.5 * M_PI) endAngle:(((90 + temC)/180) * M_PI) clockwise:YES];
         [vocalnoPath addArcWithCenter:CGPointMake(_pointP.x, _pointO.y + (_pointO.y - _pointP.y)) radius:_r2 startAngle:((270 - temC)/180 *M_PI) endAngle:(1.5 *M_PI) clockwise:YES];
     }
-    else if (dynamic_pointQ_d >= _tube_d + _mid_d && dynamic_pointQ_d <= _tube_d + _mid_d + _mid_d) {
+    else if (_dynamic_pointQ_d >= _tube_d + _mid_d && _dynamic_pointQ_d <= _tube_d + _mid_d + _mid_d)
+    {
         //左滑到右，另一边的火山形状
         double temC = atan(((_pointQ.x - _pointO.x) - _mid_d - _tube_d)/(_pointO.y - _pointP.y))*180/M_PI;
         
@@ -235,26 +309,27 @@
 
     UIBezierPath *semiPath = [UIBezierPath bezierPath];
     //减去0.2是为了严密贴合，因为double计算最终结果稍有偏差
-    if (_d >= _mid_d) {
-        r3 = _tube_h/2;
-    }
     
     [semiPath addArcWithCenter:CGPointMake(_pointQ.x, _pointQ.y) radius:r3 startAngle:(((270 + c)/180) * M_PI) endAngle:(((90 - c)/180)*M_PI) clockwise:YES];
 
     self.rightSemicircleShape.path  = semiPath.CGPath;
     
-    //----------------------------------------leftShape(完全进入时左方形状形状)-----------------------------------------
+    //----------------------------------------leftCircleShape(完全进入时左圆形状)-----------------------------------------
     
     UIBezierPath *leftPath = [UIBezierPath bezierPath];
-    if (_d < _mainRectWidth) {
+    if (_d <= _mainRectWidth)
+    {
         [leftPath addArcWithCenter:_pointO radius:_r1 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
-    }else if(_d >= _mainRectWidth && (_d - _mainRectWidth) <= _mid_d){
-        double temC = atan((_pointP.x - _pointO.x - (_d - _mainRectWidth))/(_pointO.y - _pointP.y))*180/M_PI;
-        CGPoint tem_pointQ = CGPointMake(_pointO.x + (_d - _mainRectWidth), _pointO.y);
+    }
+    else if(_dynamic_pointQ2_d <= _mid_d)
+    {
+        double temC = atan((_pointP.x - _pointO.x - _dynamic_pointQ2_d)/(_pointO.y - _pointP.y))*180/M_PI;
         double temR3 = (_pointO.y - _pointP.y)/cosx(temC) - _r2;
-        [leftPath addArcWithCenter:tem_pointQ radius:temR3 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
-    }else if (_d >= _mid_d + _mainRectWidth){
-        CGPoint tem_pointQ = CGPointMake(_pointO.x + ( _d - _mainRectWidth), _pointO.y);
+        [leftPath addArcWithCenter:_pointQ2 radius:temR3 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
+    }
+    else if (_dynamic_pointQ2_d <= _mid_d + _tube_d)
+    {
+        CGPoint tem_pointQ = CGPointMake(_pointO.x + _dynamic_pointQ2_d, _pointO.y);
         [leftPath addArcWithCenter:tem_pointQ radius:_tube_h/2 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
         
     }
@@ -268,8 +343,8 @@
     if(_d <= _tube_d + _mid_d)
     {
 
-        [recPath moveToPoint:CGPointMake(_pointR.x , _pointC.y)];
-        [recPath addLineToPoint:CGPointMake(_pointR.x , _pointD.y)];
+        [recPath moveToPoint:CGPointMake(_pointQ2.x , _pointC.y)];
+        [recPath addLineToPoint:CGPointMake(_pointQ2.x , _pointD.y)];
         [recPath addLineToPoint:CGPointMake(_pointQ.x, _pointD.y)];
         [recPath addLineToPoint:CGPointMake(_pointQ.x, _pointC.y)];
         [recPath addLineToPoint:_pointC];
