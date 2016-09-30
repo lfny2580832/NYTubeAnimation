@@ -30,7 +30,7 @@
 @property (nonatomic, strong) CAShapeLayer *leftSemiShape;          //左边圆弧
 @property (nonatomic, strong) CAShapeLayer *mainRecShape;           //主体矩形区域
 @property (nonatomic, strong) CAShapeLayer *volcanoShape;           //火山形状
-@property (nonatomic, strong) CAShapeLayer *rightSemicircleShape;        //半圆形状
+@property (nonatomic, strong) CAShapeLayer *rightCircleShape;        //半圆形状
 @property (nonatomic, strong) CAShapeLayer *leftCircleShape;        //快完全进入时，使用该形状代替整体形状
 @property (nonatomic, strong) CAShapeLayer *recShape;               //管道形状矩形区域
 
@@ -109,14 +109,14 @@
 
     self.leftSemiShape = [[CAShapeLayer alloc]init];
     self.volcanoShape = [[CAShapeLayer alloc]init];
-    self.rightSemicircleShape = [[CAShapeLayer alloc]init];
+    self.rightCircleShape = [[CAShapeLayer alloc]init];
     self.recShape = [[CAShapeLayer alloc]init];
     self.mainRecShape = [[CAShapeLayer alloc]init];
     self.leftCircleShape = [[CAShapeLayer alloc]init];
     
     self.leftSemiShape.frame = frame;
     self.volcanoShape.frame = frame;
-    self.rightSemicircleShape.frame = frame;
+    self.rightCircleShape.frame = frame;
     self.recShape.frame = frame;
     self.mainRecShape.frame = frame;
     self.leftCircleShape.frame = frame;
@@ -124,7 +124,7 @@
     [self.layer addSublayer:self.leftSemiShape];
     [self.layer addSublayer:self.mainRecShape];
     [self.layer addSublayer:self.volcanoShape];
-    [self.layer addSublayer:self.rightSemicircleShape];
+    [self.layer addSublayer:self.rightCircleShape];
     [self.layer addSublayer:self.recShape];
     [self.layer addSublayer:self.leftCircleShape];
 }
@@ -142,7 +142,7 @@
     _d = _d + _increment;
     [self drawWithParams];
 
-    if (_dynamic_pointQ_d >= _tube_d + _mid_d + _mid_d ) {
+    if (_dynamic_pointQ2_d >= _tube_d + _mid_d + _mid_d ) {
         _d = 0;
         [self initParams];
     }
@@ -226,6 +226,10 @@
     {
         _dynamic_pointQ_d += _mid_d_rate * _increment;
     }
+    else if(_dynamic_pointQ_d <= _mid_d + _tube_d + _mid_d + _mainRectWidth)
+    {   //到右方后原速行驶
+        _dynamic_pointQ_d += _increment;
+    }
     //动态圆弧的圆心
     _pointQ = CGPointMake(_pointO.x + _dynamic_pointQ_d, _pointO.y);
     
@@ -245,6 +249,9 @@
     {
         c = atan((_pointQ.x - _pointP2.x)/(_pointO.y - _pointP.y))*180/M_PI;
     }
+    else{
+        c = 90 - _a;
+    }
     
     //动态圆的半径
     double r3 = (_pointO.y - _pointP.y)/cosx(c) - _r2;
@@ -254,23 +261,31 @@
     //----------------------------------------leftSemiShape(左圆弧形状)-----------------------------------------
 
     UIBezierPath *leftSemiPath = [UIBezierPath bezierPath];
-    if (_d >= _mainRectWidth) {
-        
-    }else{
+    if (_d <= _mainRectWidth) {
         [leftSemiPath addArcWithCenter:_pointR radius:_r1 startAngle:(0.5 * M_PI) endAngle:(1.5 * M_PI) clockwise:YES];
+    }
+    else if(_dynamic_pointQ_d >= _mid_d + _tube_d + _mid_d)
+    {
+        [leftSemiPath addArcWithCenter:_pointQ radius:_r1 startAngle:(1.5 * M_PI) endAngle:(0.5 * M_PI) clockwise:YES];
     }
     self.leftSemiShape.path = leftSemiPath.CGPath;
     
     //----------------------------------------mainRecShape(主体矩形形状)-----------------------------------------
     
     UIBezierPath *mainRecShape = [UIBezierPath bezierPath];
-    if (_d <= _mainRectWidth) {
+    if (_d <= _mainRectWidth)
+    {
         [mainRecShape moveToPoint:CGPointMake(_pointR.x, _pointR.y - _r1)];
         [mainRecShape addLineToPoint:CGPointMake(_pointR.x, _pointR.y + _r1)];
         [mainRecShape addLineToPoint:CGPointMake(_pointO.x, _pointO.y + _r1)];
         [mainRecShape addLineToPoint:CGPointMake(_pointO.x, _pointO.y - _r1)];
-    }else{
-        
+    }
+    else if(_dynamic_pointQ_d >= _mid_d + _tube_d + _mid_d && _dynamic_pointQ_d <= _mid_d + _tube_d + _mid_d + _mainRectWidth)
+    {
+        [mainRecShape moveToPoint:CGPointMake(_pointO2.x, _pointO2.y - _r1)];
+        [mainRecShape addLineToPoint:CGPointMake(_pointO2.x, _pointO2.y + _r1)];
+        [mainRecShape addLineToPoint:CGPointMake(_pointQ.x, _pointQ.y + _r1)];
+        [mainRecShape addLineToPoint:CGPointMake(_pointQ.x, _pointQ.y - _r1)];
     }
     self.mainRecShape.path = mainRecShape.CGPath;
     
@@ -294,14 +309,17 @@
         [vocalnoPath addArcWithCenter:_pointP radius:_r2 startAngle:(0.5 * M_PI) endAngle:(((90 + temC)/180) * M_PI) clockwise:YES];
         [vocalnoPath addArcWithCenter:CGPointMake(_pointP.x, _pointO.y + (_pointO.y - _pointP.y)) radius:_r2 startAngle:((270 - temC)/180 *M_PI) endAngle:(1.5 *M_PI) clockwise:YES];
     }
-    else if (_dynamic_pointQ_d >= _tube_d + _mid_d && _dynamic_pointQ_d <= _tube_d + _mid_d + _mid_d)
+    else if (_dynamic_pointQ_d >= _tube_d + _mid_d && _dynamic_pointQ2_d <= _tube_d + _mid_d + _mid_d)
     {
         //左滑到右，另一边的火山形状
         double temC = atan(((_pointQ.x - _pointO.x) - _mid_d - _tube_d)/(_pointO.y - _pointP.y))*180/M_PI;
         
         [vocalnoPath addArcWithCenter:_pointP2 radius:_r2 startAngle:(((90 - temC)/180) * M_PI) endAngle:(M_PI * 0.5) clockwise:YES];
         [vocalnoPath addArcWithCenter:CGPointMake(_pointP2.x, _pointO.y + (_pointO.y - _pointP.y)) radius:_r2 startAngle:(1.5 * M_PI) endAngle:(((270 + temC)/180) * M_PI) clockwise:YES];
-
+    }
+    else if (_dynamic_pointQ_d >= _mid_d + _tube_d + _mid_d + _mainRectWidth)
+    {
+        
     }
     self.volcanoShape.path = vocalnoPath.CGPath;
     
@@ -310,9 +328,13 @@
     UIBezierPath *semiPath = [UIBezierPath bezierPath];
     //减去0.2是为了严密贴合，因为double计算最终结果稍有偏差
     
-    [semiPath addArcWithCenter:CGPointMake(_pointQ.x, _pointQ.y) radius:r3 startAngle:(((270 + c)/180) * M_PI) endAngle:(((90 - c)/180)*M_PI) clockwise:YES];
+    if (_dynamic_pointQ_d <= _mid_d + _tube_d + _mid_d) {
+        [semiPath addArcWithCenter:CGPointMake(_pointQ.x, _pointQ.y) radius:r3 startAngle:(0 * M_PI) endAngle:(2*M_PI) clockwise:YES];
+    }else{
+        [semiPath addArcWithCenter:CGPointMake(_pointO2.x, _pointQ.y) radius:r3 startAngle:(0 * M_PI) endAngle:(2*M_PI) clockwise:YES];
+    }
 
-    self.rightSemicircleShape.path  = semiPath.CGPath;
+    self.rightCircleShape.path  = semiPath.CGPath;
     
     //----------------------------------------leftCircleShape(完全进入时左圆形状)-----------------------------------------
     
@@ -359,7 +381,7 @@
     [self.leftSemiShape setNeedsDisplay];
     [self.mainRecShape setNeedsDisplay];
     [self.volcanoShape setNeedsDisplay];
-    [self.rightSemicircleShape setNeedsDisplay];
+    [self.rightCircleShape setNeedsDisplay];
     [self.recShape setNeedsDisplay];
     [self.leftCircleShape setNeedsDisplay];
 }

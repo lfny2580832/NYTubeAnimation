@@ -58,7 +58,7 @@
 
 - (void)changeValue:(UISlider *)slider
 {
-    self.chosen_d = slider.value * 100;
+    self.chosen_d = slider.value * 200;
     self.label.text = [NSString stringWithFormat:@"%f",self.chosen_d];
     self.animationView.chosen_d = self.chosen_d;
 }
