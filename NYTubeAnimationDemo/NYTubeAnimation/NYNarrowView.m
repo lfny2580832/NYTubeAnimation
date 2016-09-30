@@ -204,7 +204,7 @@
     }
     else
     {
-        _dynamic_pointQ2_d = _mid_d + _tube_d + _mid_d;
+        _dynamic_pointQ2_d = _mid_d + _tube_d ;
     }
     
     _pointQ2 = CGPointMake(_pointO.x + _dynamic_pointQ2_d, _pointO.y);
@@ -309,7 +309,7 @@
         [vocalnoPath addArcWithCenter:_pointP radius:_r2 startAngle:(0.5 * M_PI) endAngle:(((90 + temC)/180) * M_PI) clockwise:YES];
         [vocalnoPath addArcWithCenter:CGPointMake(_pointP.x, _pointO.y + (_pointO.y - _pointP.y)) radius:_r2 startAngle:((270 - temC)/180 *M_PI) endAngle:(1.5 *M_PI) clockwise:YES];
     }
-    else if (_dynamic_pointQ_d >= _tube_d + _mid_d && _dynamic_pointQ2_d <= _tube_d + _mid_d + _mid_d)
+    else if (_dynamic_pointQ_d >= _tube_d + _mid_d && _dynamic_pointQ2_d <= _tube_d + _mid_d )
     {
         //左滑到右，另一边的火山形状
         double temC = atan(((_pointQ.x - _pointO.x) - _mid_d - _tube_d)/(_pointO.y - _pointP.y))*180/M_PI;
@@ -317,9 +317,11 @@
         [vocalnoPath addArcWithCenter:_pointP2 radius:_r2 startAngle:(((90 - temC)/180) * M_PI) endAngle:(M_PI * 0.5) clockwise:YES];
         [vocalnoPath addArcWithCenter:CGPointMake(_pointP2.x, _pointO.y + (_pointO.y - _pointP.y)) radius:_r2 startAngle:(1.5 * M_PI) endAngle:(((270 + temC)/180) * M_PI) clockwise:YES];
     }
-    else if (_dynamic_pointQ_d >= _mid_d + _tube_d + _mid_d + _mainRectWidth)
+    else if (_dynamic_pointQ2_d <= _mid_d + _tube_d + _mid_d)
     {
-        
+        double temC = atan((_pointQ2.x - _pointP2.x)/(_pointO.y - _pointP.y))*180/M_PI;
+        [vocalnoPath addArcWithCenter:_pointP2 radius:_r2 startAngle:(((_a)/180) * M_PI) endAngle:(M_PI * ((90 - temC)/180)) clockwise:YES];
+        [vocalnoPath addArcWithCenter:CGPointMake(_pointP2.x, _pointO.y + (_pointO.y - _pointP.y)) radius:_r2 startAngle:(((270 + temC)/180) * M_PI) endAngle:(((360 - _a)/180) * M_PI) clockwise:YES];
     }
     self.volcanoShape.path = vocalnoPath.CGPath;
     
@@ -353,7 +355,12 @@
     {
         CGPoint tem_pointQ = CGPointMake(_pointO.x + _dynamic_pointQ2_d, _pointO.y);
         [leftPath addArcWithCenter:tem_pointQ radius:_tube_h/2 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
-        
+    }
+    else if (_dynamic_pointQ2_d <= _mid_d + _tube_d + _mid_d)
+    {
+        double temC = atan(((_pointQ2.x - _pointO.x) - _mid_d - _tube_d)/(_pointO.y - _pointP.y))*180/M_PI;
+        double temR3 = (_pointO.y - _pointP.y)/cosx(temC) - _r2;
+        [leftPath addArcWithCenter:_pointQ2 radius:temR3 startAngle:(0 * M_PI) endAngle:(2.0 * M_PI) clockwise:YES];
     }
     self.leftCircleShape.path = leftPath.CGPath;
     
