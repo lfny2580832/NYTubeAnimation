@@ -59,16 +59,16 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        _r1 = 40;
-        _r2 = 20;
-        _a = 28.0;      //角度制
+        _r1 = 20;
+        _r2 = 10;
+        _a = 27.0;      //角度制
         _d = 0;
-        _increment = 4;
+        _increment = 3;
         _mainRectWidth = _r1 * 2;
-        _tube_d = _r1 * 6;
+        _tube_d = _r1 * 7;
         
-        _mid_d_rate = 1.5f;
-        _tube_d_rate = 3.0f;
+        _mid_d_rate = 2.f;
+        _tube_d_rate = 4.0f;
 
         [self initShapes];
         [self initParams];
@@ -81,7 +81,7 @@
 - (void)initParams
 {
     //左块右圆圆心
-    _pointO = CGPointMake(200, 500);
+    _pointO = CGPointMake(60, 500);
     //动态圆圆心
     _pointQ = _pointO;
     //形状右圆圆心
@@ -201,10 +201,13 @@
     else if (_dynamic_pointQ2_d <  _mid_d + _tube_d + _mid_d)
     {
         _dynamic_pointQ2_d += _mid_d_rate * _increment;
+        if (_dynamic_pointQ2_d >= _mid_d + _tube_d + _mid_d) {
+            _dynamic_pointQ2_d = _mid_d + _tube_d + _mid_d;
+        }
     }
     else
     {
-        _dynamic_pointQ2_d = _mid_d + _tube_d ;
+        _dynamic_pointQ2_d = _mid_d + _tube_d + _mid_d;
     }
     
     _pointQ2 = CGPointMake(_pointO.x + _dynamic_pointQ2_d, _pointO.y);
@@ -229,6 +232,9 @@
     else if(_dynamic_pointQ_d <= _mid_d + _tube_d + _mid_d + _mainRectWidth)
     {   //到右方后原速行驶
         _dynamic_pointQ_d += _increment;
+        if (_dynamic_pointQ_d > _mid_d + _tube_d + _mid_d + _mainRectWidth) {
+            _dynamic_pointQ_d = _mid_d + _tube_d + _mid_d + _mainRectWidth;
+        }
     }
     //动态圆弧的圆心
     _pointQ = CGPointMake(_pointO.x + _dynamic_pointQ_d, _pointO.y);
@@ -280,7 +286,7 @@
         [mainRecShape addLineToPoint:CGPointMake(_pointO.x, _pointO.y + _r1)];
         [mainRecShape addLineToPoint:CGPointMake(_pointO.x, _pointO.y - _r1)];
     }
-    else if(_dynamic_pointQ_d >= _mid_d + _tube_d + _mid_d && _dynamic_pointQ_d <= _mid_d + _tube_d + _mid_d + _mainRectWidth)
+    else if(_dynamic_pointQ_d >= _mid_d + _tube_d + _mid_d )
     {
         [mainRecShape moveToPoint:CGPointMake(_pointO2.x, _pointO2.y - _r1)];
         [mainRecShape addLineToPoint:CGPointMake(_pointO2.x, _pointO2.y + _r1)];
@@ -303,7 +309,6 @@
     }
     else if(_dynamic_pointQ2_d <= _mid_d)
     {
-//        double temC = atan((_pointP.x - _pointO.x - (_mid_d - _dynamic_pointQ2_d))/(_pointO.y - _pointP.y))*180/M_PI;
         double temC = atan((_pointP.x - _pointO.x - _dynamic_pointQ2_d)/(_pointO.y - _pointP.y))*180/M_PI;
 
         [vocalnoPath addArcWithCenter:_pointP radius:_r2 startAngle:(0.5 * M_PI) endAngle:(((90 + temC)/180) * M_PI) clockwise:YES];
@@ -317,7 +322,7 @@
         [vocalnoPath addArcWithCenter:_pointP2 radius:_r2 startAngle:(((90 - temC)/180) * M_PI) endAngle:(M_PI * 0.5) clockwise:YES];
         [vocalnoPath addArcWithCenter:CGPointMake(_pointP2.x, _pointO.y + (_pointO.y - _pointP.y)) radius:_r2 startAngle:(1.5 * M_PI) endAngle:(((270 + temC)/180) * M_PI) clockwise:YES];
     }
-    else if (_dynamic_pointQ2_d <= _mid_d + _tube_d + _mid_d)
+    else if (_dynamic_pointQ2_d < _mid_d + _tube_d + _mid_d)
     {
         double temC = atan((_pointQ2.x - _pointP2.x)/(_pointO.y - _pointP.y))*180/M_PI;
         [vocalnoPath addArcWithCenter:_pointP2 radius:_r2 startAngle:(((_a)/180) * M_PI) endAngle:(M_PI * ((90 - temC)/180)) clockwise:YES];
