@@ -16,7 +16,7 @@
 @interface NYTubeAnimationView ()
 
 @property (nonatomic, strong) NYNarrowView *narrowView;
-@property (nonatomic, strong) TestView *testView;
+@property (nonatomic, strong) NYNarrowView *opNarrowView;
 
 @end
 
@@ -34,12 +34,25 @@
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
     [self addSubview:self.narrowView];
-    self.narrowView.chosen_d = 1;
+    [self addSubview:self.opNarrowView];
+    self.narrowView.chosen_d = 0.001;
+    self.opNarrowView.chosen_d = 001;
 }
 
 - (void)setChosen_d:(double)chosen_d
 {
     self.narrowView.chosen_d = chosen_d;
+}
+
+
+- (void)turnToFirstPage
+{
+    
+}
+
+- (void)turnToSecondePage
+{
+    self.narrowView.chosen_d = self.frame.size.width/2;
 }
 
 #pragma mark Get
@@ -49,6 +62,16 @@
         _narrowView = [[NYNarrowView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
     }
     return _narrowView;
+}
+
+- (NYNarrowView *)opNarrowView
+{
+    if (!_opNarrowView) {
+        _opNarrowView = [[NYNarrowView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        _opNarrowView.transform = CGAffineTransformMakeRotation(M_PI);
+        _opNarrowView.hidden = YES;
+    }
+    return _opNarrowView;
 }
 
 @end

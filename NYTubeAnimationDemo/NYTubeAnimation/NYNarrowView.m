@@ -53,26 +53,16 @@
     double  _dynamic_pointQ_d;
     double  _dynamic_pointQ2_d;
     
+    double _pointOx;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        _r1 = 20;
-        _r2 = 10;
-        _a = 27.0;      //角度制
-        _d = 0;
-        _increment = 3;
-        _mainRectWidth = _r1 * 2;
-        _tube_d = _r1 * 7;
-        
-        _mid_d_rate = 2.f;
-        _tube_d_rate = 4.0f;
 
-        [self initShapes];
         [self initParams];
-
+        [self initShapes];
         [self setDisplayLink];
     }
     return self;
@@ -80,8 +70,15 @@
 
 - (void)initParams
 {
+    _r1 = 20;
+    _r2 = 10;
+    _a = 27.0;      //角度制
+    _d = 0;
+    _pointOx = 65.f;
+    _increment = 4;
+    _mainRectWidth = _r1 * 2; 
     //左块右圆圆心
-    _pointO = CGPointMake(60, 500);
+    _pointO = CGPointMake(_pointOx, self.frame.size.height/2);
     //动态圆圆心
     _pointQ = _pointO;
     //形状右圆圆心
@@ -100,6 +97,12 @@
     
     _dynamic_pointQ_d = 0;
     _dynamic_pointQ2_d = 0;
+    
+    
+    _tube_d = self.frame.size.width - _pointOx * 2 - _mid_d * 2 ;
+    
+    _mid_d_rate = 2.f;
+    _tube_d_rate = 4.0f;
 }
 
 //初始化各shape
@@ -139,8 +142,9 @@
 //每帧执行的动作
 - (void)changeParam
 {
-    _d = _d + _increment;
     [self drawWithParams];
+    
+    _d = _d + _increment;
 
     if (_dynamic_pointQ2_d >= _tube_d + _mid_d + _mid_d ) {
         _d = 0;
@@ -153,10 +157,10 @@
     if (_d >= _chosen_d) {
         return;
     }
-    
+    [self drawWithParams];
+
     _d = _d + _increment;
 
-    [self drawWithParams];
 }
 
 - (void)setChosen_d:(double)chosen_d
@@ -234,11 +238,13 @@
         _dynamic_pointQ_d += _increment;
         if (_dynamic_pointQ_d > _mid_d + _tube_d + _mid_d + _mainRectWidth) {
             _dynamic_pointQ_d = _mid_d + _tube_d + _mid_d + _mainRectWidth;
+            
+#warning 此处设置完成tag，正反动画tag，设置delegate
+            NSLog(@"----动画结束");
         }
     }
     //动态圆弧的圆心
     _pointQ = CGPointMake(_pointO.x + _dynamic_pointQ_d, _pointO.y);
-    
     
     //动态圆弧端-圆心与y轴的夹角
     double c;

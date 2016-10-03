@@ -11,6 +11,10 @@
 @interface NYTubeAnimationView : UIView
 @property (nonatomic, assign) double chosen_d;
 
+- (void)turnToSecondePage;
+
+- (void)turnToFirstPage;
+
 @end
 
 @interface TestView : UIView
