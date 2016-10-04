@@ -13,8 +13,8 @@
 		4A4DB4631D78381700C29E6E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4A4DB4611D78381700C29E6E /* Main.storyboard */; };
 		4A4DB4651D78381700C29E6E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A4DB4641D78381700C29E6E /* Assets.xcassets */; };
 		4A4DB4681D78381700C29E6E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4A4DB4661D78381700C29E6E /* LaunchScreen.storyboard */; };
-		4A4DB4721D78406B00C29E6E /* NYTubeAnimationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DB4711D78406B00C29E6E /* NYTubeAnimationView.m */; };
-		4AE339FF1D7981AE0048AECD /* NYNarrowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AE339FE1D7981AE0048AECD /* NYNarrowView.m */; };
+		4A4DB4721D78406B00C29E6E /* NYTubeAnimationControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DB4711D78406B00C29E6E /* NYTubeAnimationControl.m */; };
+		4AE339FF1D7981AE0048AECD /* NYTubeAnimationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AE339FE1D7981AE0048AECD /* NYTubeAnimationView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,10 +28,10 @@
 		4A4DB4641D78381700C29E6E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4A4DB4671D78381700C29E6E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4A4DB4691D78381700C29E6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4A4DB4701D78406B00C29E6E /* NYTubeAnimationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYTubeAnimationView.h; sourceTree = "<group>"; };
-		4A4DB4711D78406B00C29E6E /* NYTubeAnimationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NYTubeAnimationView.m; sourceTree = "<group>"; };
-		4AE339FD1D7981AE0048AECD /* NYNarrowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYNarrowView.h; sourceTree = "<group>"; };
-		4AE339FE1D7981AE0048AECD /* NYNarrowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NYNarrowView.m; sourceTree = "<group>"; };
+		4A4DB4701D78406B00C29E6E /* NYTubeAnimationControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYTubeAnimationControl.h; sourceTree = "<group>"; };
+		4A4DB4711D78406B00C29E6E /* NYTubeAnimationControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NYTubeAnimationControl.m; sourceTree = "<group>"; };
+		4AE339FD1D7981AE0048AECD /* NYTubeAnimationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYTubeAnimationView.h; sourceTree = "<group>"; };
+		4AE339FE1D7981AE0048AECD /* NYTubeAnimationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NYTubeAnimationView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,10 +89,10 @@
 		4A4DB46F1D78404000C29E6E /* NYTubeAnimation */ = {
 			isa = PBXGroup;
 			children = (
-				4A4DB4701D78406B00C29E6E /* NYTubeAnimationView.h */,
-				4A4DB4711D78406B00C29E6E /* NYTubeAnimationView.m */,
-				4AE339FD1D7981AE0048AECD /* NYNarrowView.h */,
-				4AE339FE1D7981AE0048AECD /* NYNarrowView.m */,
+				4A4DB4701D78406B00C29E6E /* NYTubeAnimationControl.h */,
+				4A4DB4711D78406B00C29E6E /* NYTubeAnimationControl.m */,
+				4AE339FD1D7981AE0048AECD /* NYTubeAnimationView.h */,
+				4AE339FE1D7981AE0048AECD /* NYTubeAnimationView.m */,
 			);
 			path = NYTubeAnimation;
 			sourceTree = "<group>";
@@ -169,9 +169,9 @@
 			files = (
 				4A4DB4601D78381700C29E6E /* ViewController.m in Sources */,
 				4A4DB45D1D78381700C29E6E /* AppDelegate.m in Sources */,
-				4A4DB4721D78406B00C29E6E /* NYTubeAnimationView.m in Sources */,
+				4A4DB4721D78406B00C29E6E /* NYTubeAnimationControl.m in Sources */,
 				4A4DB45A1D78381700C29E6E /* main.m in Sources */,
-				4AE339FF1D7981AE0048AECD /* NYNarrowView.m in Sources */,
+				4AE339FF1D7981AE0048AECD /* NYTubeAnimationView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

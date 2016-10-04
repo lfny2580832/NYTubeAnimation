@@ -7,26 +7,25 @@
 //
 
 #import "ViewController.h"
-#import "NYTubeAnimationView.h"
+#import "NYTubeAnimationControl.h"
 
 @interface ViewController ()
 
-@property (nonatomic, strong) NYTubeAnimationView *animationView;
+@property (nonatomic, strong) NYTubeAnimationControl *animationViewControl;
 
 @property (nonatomic, strong) UILabel *label;
+
 @property (nonatomic, assign) double chosen_d;
+
 @end
+
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.view addSubview:self.animationView];
-    
-    UISlider *slider = [[UISlider alloc]initWithFrame:CGRectMake(50, 100, 300, 20)];
-    [slider addTarget:self action:@selector(changeValue:) forControlEvents:UIControlEventValueChanged];
-    [self.view addSubview:slider];
+    [self.view addSubview:self.animationViewControl];
     
     [self.view addSubview:self.label];
     
@@ -45,28 +44,21 @@
 
 - (void)addChosend
 {
-    [self.animationView turnToSecondePage];
+    [self.animationViewControl turnToSecondePage];
 }
 
 - (void)subChosend
 {
-
-}
-
-- (void)changeValue:(UISlider *)slider
-{
-    self.chosen_d = slider.value * 300;
-    self.label.text = [NSString stringWithFormat:@"%f",self.chosen_d];
-    self.animationView.chosen_d = self.chosen_d;
+    [self.animationViewControl turnToFirstPage];
 }
 
 #pragma mark Get
-- (NYTubeAnimationView *)animationView
+- (NYTubeAnimationControl *)animationViewControl
 {
-    if (!_animationView) {
-        _animationView = [[NYTubeAnimationView alloc]initWithFrame:CGRectMake(0, 500, self.view.frame.size.width, 60)];
+    if (!_animationViewControl) {
+        _animationViewControl = [[NYTubeAnimationControl alloc]initWithFrame:CGRectMake(0, 500, self.view.frame.size.width, 60)];
     }
-    return _animationView;
+    return _animationViewControl;
 }
 
 - (UILabel *)label
