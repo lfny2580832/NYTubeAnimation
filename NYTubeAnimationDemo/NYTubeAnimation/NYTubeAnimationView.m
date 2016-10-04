@@ -157,6 +157,12 @@
     [self.chosenDisplayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 }
 
+- (void)animationDidfinish
+{
+    [self.chosenDisplayLink invalidate];
+    self.chosenDisplayLink = nil;
+}
+
 #pragma mark 绘制方法
 - (void)drawWithParams
 {
@@ -220,6 +226,7 @@
             
             if (!_finished) {
                 _finished = !_finished;
+                [self animationDidfinish];
                 if (self.towardsType == TowardRight) {
                     if ([self.delegate respondsToSelector:@selector(didTurnedToSecondPage)]) {
                         [self.delegate didTurnedToSecondPage];
