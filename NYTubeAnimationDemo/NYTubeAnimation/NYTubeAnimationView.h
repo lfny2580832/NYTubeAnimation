@@ -38,3 +38,13 @@ typedef NS_ENUM(NSUInteger, TowardsType) {
 @property (nonatomic, weak) id<NYTubeAnimationViewDelegate> delegate;
 
 @end
+
+
+
+@interface NYShapeLayer :CAShapeLayer
+
+- (instancetype)initWithFrame:(CGRect)frame Color:(UIColor *)color;
+
+- (instancetype)initWithFrame:(CGRect)frame Color:(UIColor *)color Path:(UIBezierPath *)path;
+
+@end

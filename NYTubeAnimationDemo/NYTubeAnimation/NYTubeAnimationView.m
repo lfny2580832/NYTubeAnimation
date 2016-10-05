@@ -24,14 +24,17 @@
 @property (nonatomic, assign) double mainRectWidth; //主体矩形的宽度
 
 //@property (nonatomic, assign) double shape_tube_d;  //形状在管道中的长度，管道可能长一些，如用此参数需设置距离比例，暂未实施
+@property (nonatomic, strong) UIView *wholeShapeView;
+@property (nonatomic, strong) UIView *animationShapeView;
 
 @property (nonatomic, strong) CADisplayLink *chosenDisplayLink;
-@property (nonatomic, strong) CAShapeLayer *leftSemiShape;          //左边圆弧
-@property (nonatomic, strong) CAShapeLayer *mainRecShape;           //主体矩形区域
-@property (nonatomic, strong) CAShapeLayer *volcanoShape;           //火山形状
-@property (nonatomic, strong) CAShapeLayer *rightCircleShape;        //半圆形状
-@property (nonatomic, strong) CAShapeLayer *leftCircleShape;        //快完全进入时，使用该形状代替整体形状
-@property (nonatomic, strong) CAShapeLayer *recShape;               //管道形状矩形区域
+@property (nonatomic, strong) NYShapeLayer *leftSemiShape;          //左边圆弧
+@property (nonatomic, strong) NYShapeLayer *mainRecShape;           //主体矩形区域
+@property (nonatomic, strong) NYShapeLayer *volcanoShape;           //火山形状
+@property (nonatomic, strong) NYShapeLayer *rightCircleShape;        //半圆形状
+@property (nonatomic, strong) NYShapeLayer *leftCircleShape;        //快完全进入时，使用该形状代替整体形状
+@property (nonatomic, strong) NYShapeLayer *recShape;               //管道形状矩形区域
+@property (nonatomic, strong) NYShapeLayer *wholeShape;             //整体行进过程形状
 
 @end
 
@@ -59,9 +62,9 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-
         [self initParams];
         [self initShapes];
+        [self drawWholeShape];
     }
     return self;
 }
@@ -70,13 +73,14 @@
 {
     _finished = NO;
     
-    _r1 = 20;
-    _r2 = 10;
+    _r1 = self.frame.size.height/2 - 4;
+    _r2 = _r1/2;
     _a = 27.0;      //角度制
     _d = 0;
     _increment = 1;
     _mainRectWidth = _r1 * 2;
-    _pointOx = _r1 + _mainRectWidth ;
+    _pointOx = _r1 + _mainRectWidth + 5;
+
 
     //左块右圆圆心
     _pointO = CGPointMake(_pointOx, self.frame.size.height/2);
@@ -88,6 +92,12 @@
     _pointP = CGPointMake(1.5*_r1*cosx(_a) + _pointO.x, -1.5*_r1*sinx(_a) + _pointO.y);
     
     _mid_d = _pointP.x - _pointO.x;
+    _tube_d = self.frame.size.width - _pointOx * 2 - _mid_d * 2 ;
+    
+    //右块左圆圆心
+    _pointO2 = CGPointMake(_pointO.x + _tube_d + 2 * _mid_d, _pointO.y);
+    //右方左上角圆心
+    _pointP2 = CGPointMake(_pointP.x + _tube_d, _pointP.y);
     
     //左方右上角圆与主体右圆上交点
     _pointA = CGPointMake(_r1*cosx(_a) + _pointO.x, -_r1*sinx(_a) + _pointO.y);
@@ -100,37 +110,129 @@
     _dynamic_pointQ2_d = 0;
     
     
-    _tube_d = self.frame.size.width - _pointOx * 2 - _mid_d * 2 ;
     
-    _mid_d_rate = 2.f;
-    _tube_d_rate = 4.0f;
+    _mid_d_rate = 2.5f;
+    _tube_d_rate = 5.0f;
 }
 
 //初始化各shape
 - (void)initShapes
 {
     CGRect frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+    UIColor *color = [UIColor whiteColor];
+    
+    self.leftSemiShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color];
+    self.volcanoShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color];
+    self.rightCircleShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color];
+    self.recShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color];
+    self.mainRecShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color];
+    self.leftCircleShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color];
+    self.wholeShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color];
+    
+    self.wholeShapeView = [[UIView alloc]initWithFrame:frame];
+    self.animationShapeView = [[UIView alloc]initWithFrame:frame];
+    
+    [self.animationShapeView.layer addSublayer:self.wholeShape];
+    [self.animationShapeView.layer addSublayer:self.leftSemiShape];
+    [self.animationShapeView.layer addSublayer:self.mainRecShape];
+    [self.animationShapeView.layer addSublayer:self.volcanoShape];
+    [self.animationShapeView.layer addSublayer:self.rightCircleShape];
+    [self.animationShapeView.layer addSublayer:self.recShape];
+    [self.animationShapeView.layer addSublayer:self.leftCircleShape];
+    
+    [self addSubview:self.wholeShapeView];
+    [self addSubview:self.animationShapeView];
+}
 
-    self.leftSemiShape = [[CAShapeLayer alloc]init];
-    self.volcanoShape = [[CAShapeLayer alloc]init];
-    self.rightCircleShape = [[CAShapeLayer alloc]init];
-    self.recShape = [[CAShapeLayer alloc]init];
-    self.mainRecShape = [[CAShapeLayer alloc]init];
-    self.leftCircleShape = [[CAShapeLayer alloc]init];
+- (void)drawWholeShape
+{
+    CGRect frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+    UIColor *color = [UIColor redColor];
+    double r1 = _r1 + 2;
     
-    self.leftSemiShape.frame = frame;
-    self.volcanoShape.frame = frame;
-    self.rightCircleShape.frame = frame;
-    self.recShape.frame = frame;
-    self.mainRecShape.frame = frame;
-    self.leftCircleShape.frame = frame;
+    //----------------------------------------leftSemiShape(左圆形状)-----------------------------------------
+    UIBezierPath *leftSemiPath = [UIBezierPath bezierPath];
+    CGPoint pointR = CGPointMake(_pointO.x - _mainRectWidth, _pointO.y);
+    [leftSemiPath addArcWithCenter:pointR radius:_r1+2 startAngle:(0.5 * M_PI) endAngle:(1.5 * M_PI) clockwise:YES];
+
+    NYShapeLayer *leftSemiShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color Path:leftSemiPath];
     
-    [self.layer addSublayer:self.leftSemiShape];
-    [self.layer addSublayer:self.mainRecShape];
-    [self.layer addSublayer:self.volcanoShape];
-    [self.layer addSublayer:self.rightCircleShape];
-    [self.layer addSublayer:self.recShape];
-    [self.layer addSublayer:self.leftCircleShape];
+    //----------------------------------------mainRecShape(主体矩形形状)-----------------------------------------
+    UIBezierPath *mainRecPath = [UIBezierPath bezierPath];
+    [mainRecPath moveToPoint:CGPointMake(pointR.x, pointR.y - r1)];
+    [mainRecPath addLineToPoint:CGPointMake(pointR.x, pointR.y + r1)];
+    [mainRecPath addLineToPoint:CGPointMake(_pointO.x, _pointO.y + r1)];
+    [mainRecPath addLineToPoint:CGPointMake(_pointO.x, _pointO.y - r1)];
+    
+    NYShapeLayer *mainRecShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color Path:mainRecPath];
+
+    //-----------------------------------------rightSemiShape(右圆形状)-----------------------------------------
+    UIBezierPath *rightSemiPath = [UIBezierPath bezierPath];
+    [rightSemiPath addArcWithCenter:_pointO radius:r1 startAngle:(1.5 * M_PI) endAngle:(0.5 * M_PI) clockwise:YES];
+    
+    NYShapeLayer *rightSemiShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color Path:rightSemiPath];
+    
+    //-------------------------------------------volcanoPath(火山形状)-----------------------------------------
+    
+    UIBezierPath *vocalnoPath = [UIBezierPath bezierPath];
+    [vocalnoPath addArcWithCenter:CGPointMake(_pointP.x , _pointP.y) radius:_r2-2 startAngle:(M_PI * 0.5) endAngle:(M_PI * ((180 - _a)/180)) clockwise:YES];
+    [vocalnoPath addArcWithCenter:CGPointMake(_pointP.x , _pointO.y + (_pointO.y - _pointP.y)) radius:_r2-2 startAngle:((180 + _a)/180 *M_PI) endAngle:(1.5 *M_PI) clockwise:YES];
+    
+    NYShapeLayer *vocalnoShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color Path:vocalnoPath];
+    
+    //---------------------------------------------recPath(管道形状)-----------------------------------------
+    double tube_h = _tube_h + 4;
+    UIBezierPath *recPath = [UIBezierPath bezierPath];
+    [recPath moveToPoint:CGPointMake(_pointO.x , _pointO.y - tube_h/2)];
+    [recPath addLineToPoint:CGPointMake(_pointO.x , _pointO.y + tube_h/2)];
+    [recPath addLineToPoint:CGPointMake(_pointO.x + _tube_d + _mid_d * 2, _pointO.y + tube_h/2)];
+    [recPath addLineToPoint:CGPointMake(_pointO.x + _tube_d + _mid_d * 2, _pointO.y - tube_h/2)];
+    [recPath addLineToPoint:CGPointMake(_pointO.x, _pointO.y - tube_h/2)];
+    [recPath closePath];
+    
+    NYShapeLayer *recShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color Path:recPath];
+    
+    //----------------------------------------r_leftSemiShape(右方左圆形状)-----------------------------------------
+    UIBezierPath *r_leftSemiPath = [UIBezierPath bezierPath];
+    CGPoint pointR2 = CGPointMake(_pointO.x + _mid_d * 2 + _tube_d, _pointO.y);
+    [r_leftSemiPath addArcWithCenter:pointR2 radius:_r1+2 startAngle:(0.5 * M_PI) endAngle:(1.5 * M_PI) clockwise:YES];
+    
+    NYShapeLayer *r_leftSemiShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color Path:r_leftSemiPath];
+    
+    //----------------------------------------r_mainRecShape(主体矩形形状)-----------------------------------------
+    UIBezierPath *r_mainRecPath = [UIBezierPath bezierPath];
+    [r_mainRecPath moveToPoint:CGPointMake(pointR2.x, pointR2.y - r1)];
+    [r_mainRecPath addLineToPoint:CGPointMake(pointR2.x, pointR2.y + r1)];
+    [r_mainRecPath addLineToPoint:CGPointMake(pointR2.x + _mainRectWidth, pointR2.y + r1)];
+    [r_mainRecPath addLineToPoint:CGPointMake(pointR2.x + _mainRectWidth, pointR2.y - r1)];
+    
+    NYShapeLayer *r_mainRecShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color Path:r_mainRecPath];
+//
+    //-----------------------------------------r_rightSemiShape(右圆形状)-----------------------------------------
+    UIBezierPath *r_rightSemiPath = [UIBezierPath bezierPath];
+    [r_rightSemiPath addArcWithCenter:CGPointMake(pointR2.x + _mainRectWidth, pointR2.y) radius:r1 startAngle:(1.5 * M_PI) endAngle:(0.5 * M_PI) clockwise:YES];
+    
+    NYShapeLayer *r_rightSemiShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color Path:r_rightSemiPath];
+//
+    //-------------------------------------------r_volcanoPath(火山形状)-----------------------------------------
+    
+    UIBezierPath *r_vocalnoPath = [UIBezierPath bezierPath];
+    [r_vocalnoPath addArcWithCenter:CGPointMake(_pointO2.x - _mid_d, _pointP.y) radius:_r2-2 startAngle:(((_a)/180) * M_PI) endAngle:(M_PI * 0.5) clockwise:YES];
+    [r_vocalnoPath addArcWithCenter:CGPointMake(_pointO2.x - _mid_d, _pointO.y + (_pointO.y - _pointP.y)) radius:_r2-2 startAngle:(1.5 * M_PI) endAngle:(((360 - _a)/180) * M_PI) clockwise:YES];
+
+    
+    NYShapeLayer *r_vocalnoShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color Path:r_vocalnoPath];
+    
+    
+    [self.wholeShapeView.layer addSublayer:leftSemiShape];
+    [self.wholeShapeView.layer addSublayer:mainRecShape];
+    [self.wholeShapeView.layer addSublayer:rightSemiShape];
+    [self.wholeShapeView.layer addSublayer:vocalnoShape];
+    [self.wholeShapeView.layer addSublayer:recShape];
+    [self.wholeShapeView.layer addSublayer:r_leftSemiShape];
+    [self.wholeShapeView.layer addSublayer:r_mainRecShape];
+    [self.wholeShapeView.layer addSublayer:r_rightSemiShape];
+    [self.wholeShapeView.layer addSublayer:r_vocalnoShape];
 }
 
 - (void)changeParamManually
@@ -166,10 +268,6 @@
 #pragma mark 绘制方法
 - (void)drawWithParams
 {
-    //右块左圆圆心
-    _pointO2 = CGPointMake(_pointO.x + _tube_d + 2 * _mid_d, _pointO.y);
-    //右方左上角圆心
-    _pointP2 = CGPointMake(_pointP.x + _tube_d, _pointP.y);
     //主体左圆圆心
     _pointR = CGPointMake(_pointO.x - _mainRectWidth + _d, _pointO.y);
 
@@ -271,8 +369,8 @@
         [leftSemiPath addArcWithCenter:_pointR radius:_r1 startAngle:(0.5 * M_PI) endAngle:(1.5 * M_PI) clockwise:YES];
     }
     else if(_dynamic_pointQ_d >= _mid_d + _tube_d + _mid_d)
-    {
-        [leftSemiPath addArcWithCenter:_pointQ radius:_r1 startAngle:(1.5 * M_PI) endAngle:(0.5 * M_PI) clockwise:YES];
+    {    //减去0.25是为了严密贴合，因为double计算最终结果稍有偏差
+        [leftSemiPath addArcWithCenter:CGPointMake(_pointQ.x - 0.28, _pointQ.y) radius:_r1 startAngle:(1.5 * M_PI) endAngle:(0.5 * M_PI) clockwise:YES];
     }
     self.leftSemiShape.path = leftSemiPath.CGPath;
     
@@ -333,12 +431,11 @@
     //-------------------------------------------rightSemiCircle(右边圆形状)-----------------------------------------
 
     UIBezierPath *semiPath = [UIBezierPath bezierPath];
-    //减去0.2是为了严密贴合，因为double计算最终结果稍有偏差
     
     if (_dynamic_pointQ_d <= _mid_d + _tube_d + _mid_d) {
-        [semiPath addArcWithCenter:CGPointMake(_pointQ.x, _pointQ.y) radius:r3 startAngle:(0 * M_PI) endAngle:(2*M_PI) clockwise:YES];
+        [semiPath addArcWithCenter:CGPointMake(_pointQ.x , _pointQ.y) radius:r3 startAngle:(0 * M_PI) endAngle:(2*M_PI) clockwise:YES];
     }else{
-        [semiPath addArcWithCenter:CGPointMake(_pointO2.x, _pointQ.y) radius:r3 startAngle:(0 * M_PI) endAngle:(2*M_PI) clockwise:YES];
+        [semiPath addArcWithCenter:CGPointMake(_pointO2.x , _pointQ.y) radius:r3 startAngle:(0 * M_PI) endAngle:(2*M_PI) clockwise:YES];
     }
 
     self.rightCircleShape.path  = semiPath.CGPath;
@@ -397,5 +494,32 @@
     [self.recShape setNeedsDisplay];
     [self.leftCircleShape setNeedsDisplay];
 }
+
+@end
+
+
+@implementation NYShapeLayer
+
+- (instancetype)initWithFrame:(CGRect)frame Color:(UIColor *)color Path:(UIBezierPath *)path
+{
+    self = [super init];
+    if (self) {
+        self.frame = frame;
+        self.fillColor = color.CGColor;
+        self.path = path.CGPath;
+    }
+    return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame Color:(UIColor *)color
+{
+    self = [super init];
+    if (self) {
+        self.frame = frame;
+        self.fillColor = color.CGColor;
+    }
+    return self;
+}
+
 
 @end

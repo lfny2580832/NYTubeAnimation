@@ -56,7 +56,7 @@
 - (NYTubeAnimationControl *)animationViewControl
 {
     if (!_animationViewControl) {
-        _animationViewControl = [[NYTubeAnimationControl alloc]initWithFrame:CGRectMake(0, 500, self.view.frame.size.width, 60)];
+        _animationViewControl = [[NYTubeAnimationControl alloc]initWithFrame:CGRectMake(0, 500, 300, 30)];
     }
     return _animationViewControl;
 }
