@@ -55,15 +55,19 @@
     self.narrowView.hidden = NO;
 }
 
-#pragma mark NYTubeAnimtionView
-- (void)didTurnedToFirstPage
+#pragma mark NYTubeAnimtionViewDelegate
+- (void)didTurnedToLeft
 {
-    NSLog(@"回到第一页");
+    if ([self.delegate respondsToSelector:@selector(didTurnedToFirstPage)]) {
+        [self.delegate didTurnedToFirstPage];
+    }
 }
 
-- (void)didTurnedToSecondPage
+- (void)didTurnedToRight
 {
-    NSLog(@"到第二页");
+    if ([self.delegate respondsToSelector:@selector(didTurnedToSecondPage)]) {
+        [self.delegate didTurnedToSecondPage];
+    }
 }
 
 #pragma mark Get

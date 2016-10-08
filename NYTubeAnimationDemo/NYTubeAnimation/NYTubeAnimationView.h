@@ -18,9 +18,9 @@ typedef NS_ENUM(NSUInteger, TowardsType) {
 
 @protocol NYTubeAnimationViewDelegate <NSObject>
 
-- (void)didTurnedToSecondPage;
+- (void)didTurnedToRight;
 
-- (void)didTurnedToFirstPage;
+- (void)didTurnedToLeft;
 
 @end
 

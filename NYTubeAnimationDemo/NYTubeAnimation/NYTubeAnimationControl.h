@@ -8,7 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
+
+@protocol NYTubeAnimationControlDelegate <NSObject>
+
+- (void)didTurnedToSecondPage;
+
+- (void)didTurnedToFirstPage;
+
+@end
+
 @interface NYTubeAnimationControl : UIView
+
+@property (nonatomic, weak) id <NYTubeAnimationControlDelegate> delegate;
 
 - (void)turnToSecondePage;
 

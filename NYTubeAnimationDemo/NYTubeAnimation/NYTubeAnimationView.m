@@ -12,6 +12,9 @@
 #define cosx(a)  cos(a/180*M_PI)
 #define tanx(a)  tan(a/180*M_PI)
 
+#define RGBA(r,g,b,a) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:a]
+#define RGB(r,g,b) RGBA(r,g,b,1.0f)
+
 @interface NYTubeAnimationView ()
 
 @property (nonatomic, assign) double a;                             /// 大圆、小圆圆心连线与x轴的夹角
@@ -145,7 +148,7 @@
 - (void)drawWholeShape
 {
     CGRect frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
-    UIColor *color = [UIColor redColor];
+    UIColor *color = RGB(225, 65, 67);
     double r1 = _r1 + 2;
     
     //----------------------------------------leftSemiShape(左圆形状)-----------------------------------------
@@ -157,10 +160,10 @@
     
     //----------------------------------------maintubeShape(主体矩形形状)-----------------------------------------
     UIBezierPath *mainRecPath = [UIBezierPath bezierPath];
-    [mainRecPath moveToPoint:CGPointMake(pointR.x, pointR.y - r1)];
-    [mainRecPath addLineToPoint:CGPointMake(pointR.x, pointR.y + r1)];
-    [mainRecPath addLineToPoint:CGPointMake(_pointO.x, _pointO.y + r1)];
-    [mainRecPath addLineToPoint:CGPointMake(_pointO.x, _pointO.y - r1)];
+    [mainRecPath moveToPoint:CGPointMake(pointR.x - 0.2, pointR.y - r1)];
+    [mainRecPath addLineToPoint:CGPointMake(pointR.x - 0.2, pointR.y + r1)];
+    [mainRecPath addLineToPoint:CGPointMake(_pointO.x + 0.2, _pointO.y + r1)];
+    [mainRecPath addLineToPoint:CGPointMake(_pointO.x + 0.2, _pointO.y - r1)];
     
     NYShapeLayer *maintubeShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color Path:mainRecPath];
 
@@ -199,10 +202,10 @@
     
     //----------------------------------------r_maintubeShape(主体矩形形状)-----------------------------------------
     UIBezierPath *r_mainRecPath = [UIBezierPath bezierPath];
-    [r_mainRecPath moveToPoint:CGPointMake(pointR2.x, pointR2.y - r1)];
-    [r_mainRecPath addLineToPoint:CGPointMake(pointR2.x, pointR2.y + r1)];
-    [r_mainRecPath addLineToPoint:CGPointMake(pointR2.x + _mainRect_w, pointR2.y + r1)];
-    [r_mainRecPath addLineToPoint:CGPointMake(pointR2.x + _mainRect_w, pointR2.y - r1)];
+    [r_mainRecPath moveToPoint:CGPointMake(pointR2.x - 0.35, pointR2.y - r1)];
+    [r_mainRecPath addLineToPoint:CGPointMake(pointR2.x - 0.35, pointR2.y + r1)];
+    [r_mainRecPath addLineToPoint:CGPointMake(pointR2.x + _mainRect_w + 0.3, pointR2.y + r1)];
+    [r_mainRecPath addLineToPoint:CGPointMake(pointR2.x + _mainRect_w + 0.3, pointR2.y - r1)];
     
     NYShapeLayer *r_maintubeShape = [[NYShapeLayer alloc]initWithFrame:frame Color:color Path:r_mainRecPath];
 //
@@ -324,11 +327,11 @@
                 _finished = !_finished;
                 [self animationDidfinish];
                 if (self.towardsType == TowardRight) {
-                    if ([self.delegate respondsToSelector:@selector(didTurnedToSecondPage)]) {
-                        [self.delegate didTurnedToSecondPage];
+                    if ([self.delegate respondsToSelector:@selector(didTurnedToRight)]) {
+                        [self.delegate didTurnedToRight];
                     }
-                }else if([self.delegate respondsToSelector:@selector(didTurnedToFirstPage)]){
-                    [self.delegate didTurnedToFirstPage];
+                }else if([self.delegate respondsToSelector:@selector(didTurnedToLeft)]){
+                    [self.delegate didTurnedToLeft];
                 }
             }
         }
@@ -368,7 +371,7 @@
     }
     else if(_dynamic_Q_d >= _uber_w + _tube_w + _uber_w)
     {    //减去0.25是为了严密贴合，因为double计算最终结果稍有偏差
-        [leftSemiPath addArcWithCenter:CGPointMake(_pointQ.x - 0.28, _pointQ.y) radius:_r1 startAngle:(1.5 * M_PI) endAngle:(0.5 * M_PI) clockwise:YES];
+        [leftSemiPath addArcWithCenter:CGPointMake(_pointQ.x - 0.3, _pointQ.y) radius:_r1 startAngle:(1.5 * M_PI) endAngle:(0.5 * M_PI) clockwise:YES];
     }
     self.leftSemiShape.path = leftSemiPath.CGPath;
     

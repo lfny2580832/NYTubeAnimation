@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "NYTubeAnimationControl.h"
 
-@interface ViewController ()
+@interface ViewController ()<NYTubeAnimationControlDelegate>
 
 @property (nonatomic, strong) NYTubeAnimationControl *animationViewControl;
 
@@ -22,6 +22,7 @@
 
 @implementation ViewController
 
+#pragma mark Life Circle
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -52,11 +53,24 @@
     [self.animationViewControl turnToFirstPage];
 }
 
+#pragma mark NYTubeAnimationControlDelegate
+- (void)didTurnedToSecondPage
+{
+    NSLog(@"到第二页");
+}
+
+- (void)didTurnedToFirstPage
+{
+    NSLog(@"到第一页");
+}
+
 #pragma mark Get
 - (NYTubeAnimationControl *)animationViewControl
 {
     if (!_animationViewControl) {
-        _animationViewControl = [[NYTubeAnimationControl alloc]initWithFrame:CGRectMake(0, 500, 300, 30)];
+        _animationViewControl = [[NYTubeAnimationControl alloc]initWithFrame:CGRectMake(0, 500, 300, 30 )];
+        _animationViewControl.center = CGPointMake(self.view.frame.size.width/2, 515);
+        _animationViewControl.delegate = self;
     }
     return _animationViewControl;
 }
