@@ -26,17 +26,12 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.layer.masksToBounds = NO;
+        [self addSubview:self.narrowView];
+        [self addSubview:self.opNarrowView];
+        self.narrowView.chosen_d = 0.001;
+        self.opNarrowView.chosen_d = 0.001;
     }
     return self;
-}
-
-- (void)willMoveToSuperview:(UIView *)newSuperview
-{
-    [self addSubview:self.narrowView];
-    [self addSubview:self.opNarrowView];
-    self.narrowView.chosen_d = 0.001;
-    self.opNarrowView.chosen_d = 0.001;
 }
 
 - (void)turnToFirstPage
@@ -71,6 +66,15 @@
 }
 
 #pragma mark Get
+- (BOOL)origin
+{
+    if (self.narrowView.d <= 10) {
+        return YES;
+    }else{
+        return NO;
+    }
+}
+
  - (NYTubeAnimationView *)narrowView
 {
     if (!_narrowView) {

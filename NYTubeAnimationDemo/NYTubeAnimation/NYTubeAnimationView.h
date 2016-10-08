@@ -30,7 +30,7 @@ typedef NS_ENUM(NSUInteger, TowardsType) {
 
 @property (nonatomic, assign) double r1;
 @property (nonatomic, assign) double r2;
-
+@property (nonatomic, assign) double d;                             /// 平移距离，输入值
 @property (nonatomic, assign) double chosen_d;
 
 @property (nonatomic, assign) TowardsType towardsType;

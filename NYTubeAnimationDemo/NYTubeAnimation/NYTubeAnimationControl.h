@@ -19,6 +19,7 @@
 
 @interface NYTubeAnimationControl : UIView
 
+@property (nonatomic, assign) BOOL origin;          //是否在初始状态，即在第一个方块
 @property (nonatomic, weak) id <NYTubeAnimationControlDelegate> delegate;
 
 - (void)turnToSecondePage;

@@ -12,13 +12,9 @@
 #define cosx(a)  cos(a/180*M_PI)
 #define tanx(a)  tan(a/180*M_PI)
 
-#define RGBA(r,g,b,a) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:a]
-#define RGB(r,g,b) RGBA(r,g,b,1.0f)
-
 @interface NYTubeAnimationView ()
 
 @property (nonatomic, assign) double a;                             /// 大圆、小圆圆心连线与x轴的夹角
-@property (nonatomic, assign) double d;                             /// 平移距离，输入值
 @property (nonatomic, assign) double increment;                     /// d的增量，如每帧移动4point
 @property (nonatomic, assign) double uber_w;                        /// 挤压完成，开始拉伸的距离
 @property (nonatomic, assign) double uber_rate;                     /// uber_w段中的速率，默认1.5x

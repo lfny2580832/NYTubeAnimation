@@ -15,6 +15,7 @@
 		4A4DB4681D78381700C29E6E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4A4DB4661D78381700C29E6E /* LaunchScreen.storyboard */; };
 		4A4DB4721D78406B00C29E6E /* NYTubeAnimationControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A4DB4711D78406B00C29E6E /* NYTubeAnimationControl.m */; };
 		4A78FE551DA893B9002A9E31 /* assetbg.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A78FE541DA893B9002A9E31 /* assetbg.png */; };
+		4A78FE581DA89CE0002A9E31 /* IndicateView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A78FE571DA89CE0002A9E31 /* IndicateView.m */; };
 		4AE339FF1D7981AE0048AECD /* NYTubeAnimationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AE339FE1D7981AE0048AECD /* NYTubeAnimationView.m */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +33,9 @@
 		4A4DB4701D78406B00C29E6E /* NYTubeAnimationControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYTubeAnimationControl.h; sourceTree = "<group>"; };
 		4A4DB4711D78406B00C29E6E /* NYTubeAnimationControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NYTubeAnimationControl.m; sourceTree = "<group>"; };
 		4A78FE541DA893B9002A9E31 /* assetbg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = assetbg.png; sourceTree = "<group>"; };
+		4A78FE561DA89CE0002A9E31 /* IndicateView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IndicateView.h; sourceTree = "<group>"; };
+		4A78FE571DA89CE0002A9E31 /* IndicateView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IndicateView.m; sourceTree = "<group>"; };
+		4A78FE591DA89E0E002A9E31 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		4AE339FD1D7981AE0048AECD /* NYTubeAnimationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYTubeAnimationView.h; sourceTree = "<group>"; };
 		4AE339FE1D7981AE0048AECD /* NYTubeAnimationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NYTubeAnimationView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -67,6 +71,8 @@
 			isa = PBXGroup;
 			children = (
 				4A4DB46F1D78404000C29E6E /* NYTubeAnimation */,
+				4A78FE561DA89CE0002A9E31 /* IndicateView.h */,
+				4A78FE571DA89CE0002A9E31 /* IndicateView.m */,
 				4A4DB45E1D78381700C29E6E /* ViewController.h */,
 				4A4DB45F1D78381700C29E6E /* ViewController.m */,
 				4A78FE531DA893AC002A9E31 /* Images */,
@@ -85,6 +91,7 @@
 				4A4DB4661D78381700C29E6E /* LaunchScreen.storyboard */,
 				4A4DB4691D78381700C29E6E /* Info.plist */,
 				4A4DB4591D78381700C29E6E /* main.m */,
+				4A78FE591DA89E0E002A9E31 /* PrefixHeader.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -185,6 +192,7 @@
 				4A4DB4721D78406B00C29E6E /* NYTubeAnimationControl.m in Sources */,
 				4A4DB45A1D78381700C29E6E /* main.m in Sources */,
 				4AE339FF1D7981AE0048AECD /* NYTubeAnimationView.m in Sources */,
+				4A78FE581DA89CE0002A9E31 /* IndicateView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,6 +307,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = C4Q55SNFQ6;
+				GCC_PREFIX_HEADER = NYTubeAnimationDemo/PrefixHeader.pch;
 				INFOPLIST_FILE = NYTubeAnimationDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = tech.niuyan.NYTubeAnimationDemo;
@@ -312,6 +321,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = C4Q55SNFQ6;
+				GCC_PREFIX_HEADER = NYTubeAnimationDemo/PrefixHeader.pch;
 				INFOPLIST_FILE = NYTubeAnimationDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = tech.niuyan.NYTubeAnimationDemo;

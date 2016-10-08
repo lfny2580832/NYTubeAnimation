@@ -7,15 +7,15 @@
 //
 
 #import "ViewController.h"
+#import "IndicateView.h"
 #import "NYTubeAnimationControl.h"
 
-@interface ViewController ()<NYTubeAnimationControlDelegate>
+@interface ViewController ()<NYTubeAnimationControlDelegate,UIScrollViewDelegate>
 
-@property (nonatomic, strong) NYTubeAnimationControl *animationViewControl;
-
-@property (nonatomic, strong) UILabel *label;
-
-@property (nonatomic, assign) double chosen_d;
+@property (nonatomic, strong) IndicateView *indicateView;
+@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) UIButton *firstBtn;
+@property (nonatomic, strong) UIButton *secondBtn;
 
 @end
 
@@ -23,34 +23,19 @@
 @implementation ViewController
 
 #pragma mark Life Circle
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
-    [self.view addSubview:self.animationViewControl];
-    
-    [self.view addSubview:self.label];
-    
-    UIButton *addBtn = [[UIButton alloc]initWithFrame:CGRectMake(160, 200, 50, 50)];
-    [addBtn setBackgroundColor:[UIColor blackColor]];
-    [addBtn setTitle:@"下一页" forState:UIControlStateNormal];
-    [addBtn addTarget:self action:@selector(addChosend) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:addBtn];
-    
-    UIButton *subBtn = [[UIButton alloc]initWithFrame:CGRectMake(220, 200, 50, 50)];
-    [subBtn setBackgroundColor:[UIColor blackColor]];
-    [subBtn setTitle:@"上一页" forState:UIControlStateNormal];
-    [subBtn addTarget:self action:@selector(subChosend) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:subBtn];
+    [self.view addSubview:self.indicateView];
+    [self.view addSubview:self.scrollView];
+    [self.scrollView addSubview:self.firstBtn];
+    [self.scrollView addSubview:self.secondBtn];
 }
 
-- (void)addChosend
+-(UIStatusBarStyle)preferredStatusBarStyle
 {
-    [self.animationViewControl turnToSecondePage];
-}
-
-- (void)subChosend
-{
-    [self.animationViewControl turnToFirstPage];
+    return UIStatusBarStyleLightContent;
 }
 
 #pragma mark NYTubeAnimationControlDelegate
@@ -64,23 +49,64 @@
     NSLog(@"到第一页");
 }
 
-#pragma mark Get
-- (NYTubeAnimationControl *)animationViewControl
+#pragma mark UIScrollView Delegate
+- (void)turnToSecondPage
 {
-    if (!_animationViewControl) {
-        _animationViewControl = [[NYTubeAnimationControl alloc]initWithFrame:CGRectMake(0, 500, 300, 30 )];
-        _animationViewControl.center = CGPointMake(self.view.frame.size.width/2, 515);
-        _animationViewControl.delegate = self;
-    }
-    return _animationViewControl;
+    [self.indicateView turnToSecondPage];
+    [self.scrollView setContentOffset:CGPointMake(SCREEN_WIDTH, 0) animated:YES];
 }
 
-- (UILabel *)label
+- (void)turnToFirstPage
 {
-    if (!_label) {
-        _label = [[UILabel alloc]initWithFrame:CGRectMake(50, 200, 100, 50)];
+    [self.indicateView turnToFirstPage];
+    [self.scrollView setContentOffset:CGPointMake(0, 0) animated:YES];
+}
+
+#pragma mark Get
+- (IndicateView *)indicateView
+{
+    if (!_indicateView) {
+        _indicateView = [[IndicateView alloc]initWithFrame:CGRectMake(0,0 , SCREEN_WIDTH, 150)];
+        [_indicateView setDelegate:self];
     }
-    return _label;
+    return _indicateView;
+}
+
+- (UIScrollView *)scrollView
+{
+    if (!_scrollView) {
+        _scrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(_indicateView.frame), SCREEN_WIDTH, SCREEN_HEIGHT - CGRectGetMaxY(_indicateView.frame))];
+        _scrollView.pagingEnabled = YES;
+        _scrollView.showsHorizontalScrollIndicator = NO;
+        _scrollView.bounces = NO;
+        _scrollView.delegate = self;
+        [_scrollView setContentSize:CGSizeMake(SCREEN_WIDTH * 2, _scrollView.frame.size.height)];
+    }
+    return _scrollView;
+}
+
+- (UIButton *)firstBtn
+{
+    if (!_firstBtn) {
+        _firstBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, _scrollView.frame.size.height)];
+        _firstBtn.backgroundColor = RGB(242,242,242);
+        [_firstBtn setTitle:@"下一页" forState:UIControlStateNormal];
+        [_firstBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [_firstBtn addTarget:self action:@selector(turnToSecondPage) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _firstBtn;
+}
+
+- (UIButton *)secondBtn
+{
+    if (!_secondBtn) {
+        _secondBtn = [[UIButton alloc]initWithFrame:CGRectMake(SCREEN_WIDTH, 0, SCREEN_WIDTH, _scrollView.frame.size.height)];
+        _secondBtn.backgroundColor = RGB(242,242,242);
+        [_secondBtn setTitle:@"上一页" forState:UIControlStateNormal];
+        [_secondBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [_secondBtn addTarget:self action:@selector(turnToFirstPage) forControlEvents:UIControlEventTouchUpInside];
+}
+    return _secondBtn;
 }
 
 @end
