@@ -1,6 +1,7 @@
 # NYTubeAnimation
 页面切换指示动画
 
+动画解析教程：http://www.jianshu.com/p/8a569dfd1c4b
 效果图：
 
 
